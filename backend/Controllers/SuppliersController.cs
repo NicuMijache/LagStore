@@ -1,4 +1,5 @@
 ﻿using LagStore.Api.Data;
+using LagStore.Api.DTOs;
 using LagStore.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,35 +18,62 @@ namespace LagStore.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Supplier>>> GetAll()
+        public async Task<ActionResult<List<SupplierDto>>> GetAll()
         {
-            return await _db.Suppliers.ToListAsync();
+            return await _db.Suppliers
+                .Select(s => new SupplierDto
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    ContactEmail = s.ContactEmail,
+                    ContactPhone = s.ContactPhone
+                })
+                .ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Supplier>> GetById(int id)
+        public async Task<ActionResult<SupplierDto>> GetById(int id)
         {
-            var supplier = await _db.Suppliers.FindAsync(id);
+            var supplier = await _db.Suppliers
+                .Where(s => s.Id == id)
+                .Select(s => new SupplierDto
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    ContactEmail = s.ContactEmail,
+                    ContactPhone = s.ContactPhone
+                })
+                .FirstOrDefaultAsync();
+
             if (supplier == null) return NotFound();
             return supplier;
         }
 
         [HttpPost]
-        public async Task<ActionResult<Supplier>> Create(Supplier supplier)
+        public async Task<ActionResult<SupplierDto>> Create(SupplierDto dto)
         {
+            var supplier = new Supplier
+            {
+                Name = dto.Name,
+                ContactEmail = dto.ContactEmail,
+                ContactPhone = dto.ContactPhone
+            };
             _db.Suppliers.Add(supplier);
             await _db.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetById), new { id = supplier.Id }, supplier);
+
+            dto.Id = supplier.Id;
+            return CreatedAtAction(nameof(GetById), new { id = supplier.Id }, dto);
         }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Supplier input)
+        public async Task<IActionResult> Update(int id, SupplierDto dto)
         {
             var supplier = await _db.Suppliers.FindAsync(id);
             if (supplier == null) return NotFound();
 
-            supplier.Name = input.Name;
-            supplier.ContactEmail = input.ContactEmail;
-            supplier.ContactPhone = input.ContactPhone;
+            supplier.Name = dto.Name;
+            supplier.ContactEmail = dto.ContactEmail;
+            supplier.ContactPhone = dto.ContactPhone;
             await _db.SaveChangesAsync();
             return NoContent();
         }

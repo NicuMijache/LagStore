@@ -1,4 +1,5 @@
 ﻿using LagStore.Api.Data;
+using LagStore.Api.DTOs;
 using LagStore.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,33 +18,43 @@ namespace LagStore.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Category>>> GetAll()
+        public async Task<ActionResult<List<CategoryDto>>> GetAll()
         {
-            return await _db.Categories.ToListAsync();
+            return await _db.Categories
+                .Select(c => new CategoryDto { Id = c.Id, Name = c.Name })
+                .ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Category>> GetById(int id)
+        public async Task<ActionResult<CategoryDto>> GetById(int id)
         {
-            var category = await _db.Categories.FindAsync(id);
+            var category = await _db.Categories
+                .Where(c => c.Id == id)
+                .Select(c => new CategoryDto { Id = c.Id, Name = c.Name })
+                .FirstOrDefaultAsync();
+
             if (category == null) return NotFound();
             return category;
         }
 
         [HttpPost]
-        public async Task<ActionResult<Category>> Create(Category category)
+        public async Task<ActionResult<CategoryDto>> Create(CategoryDto dto)
         {
+            var category = new Category { Name = dto.Name };
             _db.Categories.Add(category);
             await _db.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
+
+            dto.Id = category.Id;
+            return CreatedAtAction(nameof(GetById), new { id = category.Id }, dto);
         }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Category input)
+        public async Task<IActionResult> Update(int id, CategoryDto dto)
         {
             var category = await _db.Categories.FindAsync(id);
             if (category == null) return NotFound();
 
-            category.Name = input.Name;
+            category.Name = dto.Name;
             await _db.SaveChangesAsync();
             return NoContent();
         }
