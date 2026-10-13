@@ -37,5 +37,31 @@ namespace LagStore.Api.Controllers
             await _db.SaveChangesAsync();
             return CreatedAtAction(nameof(GetById), new { id = supplier.Id }, supplier);
         }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, Supplier input)
+        {
+            var supplier = await _db.Suppliers.FindAsync(id);
+            if (supplier == null) return NotFound();
+
+            supplier.Name = input.Name;
+            supplier.ContactEmail = input.ContactEmail;
+            supplier.ContactPhone = input.ContactPhone;
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var supplier = await _db.Suppliers.FindAsync(id);
+            if (supplier == null) return NotFound();
+
+            if (await _db.Products.AnyAsync(p => p.SupplierId == id))
+                return Conflict("Furnizorul are produse și nu poate fi șters.");
+
+            _db.Suppliers.Remove(supplier);
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }

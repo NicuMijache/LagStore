@@ -37,5 +37,32 @@ namespace LagStore.Api.Controllers
             await _db.SaveChangesAsync();
             return CreatedAtAction(nameof(GetById), new { id = method.Id }, method);
         }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, DeliveryMethod input)
+        {
+            var method = await _db.DeliveryMethods.FindAsync(id);
+            if (method == null) return NotFound();
+
+            method.Name = input.Name;
+            method.Price = input.Price;
+            method.EstimatedDaysMin = input.EstimatedDaysMin;
+            method.EstimatedDaysMax = input.EstimatedDaysMax;
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var method = await _db.DeliveryMethods.FindAsync(id);
+            if (method == null) return NotFound();
+
+            if (await _db.Products.AnyAsync(p => p.DeliveryMethodId == id))
+                return Conflict("Metoda de livrare este folosită de produse și nu poate fi ștearsă.");
+
+            _db.DeliveryMethods.Remove(method);
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }
