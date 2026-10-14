@@ -50,7 +50,7 @@ namespace LagStore.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<SupplierDto>> Create(SupplierDto dto)
+        public async Task<ActionResult<SupplierDto>> Create(SupplierSaveDto dto)
         {
             var supplier = new Supplier
             {
@@ -61,12 +61,18 @@ namespace LagStore.Api.Controllers
             _db.Suppliers.Add(supplier);
             await _db.SaveChangesAsync();
 
-            dto.Id = supplier.Id;
-            return CreatedAtAction(nameof(GetById), new { id = supplier.Id }, dto);
+            var result = new SupplierDto
+            {
+                Id = supplier.Id,
+                Name = supplier.Name,
+                ContactEmail = supplier.ContactEmail,
+                ContactPhone = supplier.ContactPhone
+            };
+            return CreatedAtAction(nameof(GetById), new { id = supplier.Id }, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, SupplierDto dto)
+        public async Task<IActionResult> Update(int id, SupplierSaveDto dto)
         {
             var supplier = await _db.Suppliers.FindAsync(id);
             if (supplier == null) return NotFound();

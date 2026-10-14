@@ -52,7 +52,7 @@ namespace LagStore.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<DeliveryMethodDto>> Create(DeliveryMethodDto dto)
+        public async Task<ActionResult<DeliveryMethodDto>> Create(DeliveryMethodSaveDto dto)
         {
             if (dto.EstimatedDaysMin > dto.EstimatedDaysMax)
                 return BadRequest("Numărul minim de zile nu poate depăși maximul.");
@@ -67,12 +67,19 @@ namespace LagStore.Api.Controllers
             _db.DeliveryMethods.Add(method);
             await _db.SaveChangesAsync();
 
-            dto.Id = method.Id;
-            return CreatedAtAction(nameof(GetById), new { id = method.Id }, dto);
+            var result = new DeliveryMethodDto
+            {
+                Id = method.Id,
+                Name = method.Name,
+                Price = method.Price,
+                EstimatedDaysMin = method.EstimatedDaysMin,
+                EstimatedDaysMax = method.EstimatedDaysMax
+            };
+            return CreatedAtAction(nameof(GetById), new { id = method.Id }, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, DeliveryMethodDto dto)
+        public async Task<IActionResult> Update(int id, DeliveryMethodSaveDto dto)
         {
             var method = await _db.DeliveryMethods.FindAsync(id);
             if (method == null) return NotFound();

@@ -38,18 +38,18 @@ namespace LagStore.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<CategoryDto>> Create(CategoryDto dto)
+        public async Task<ActionResult<CategoryDto>> Create(CategorySaveDto dto)
         {
             var category = new Category { Name = dto.Name };
             _db.Categories.Add(category);
             await _db.SaveChangesAsync();
 
-            dto.Id = category.Id;
-            return CreatedAtAction(nameof(GetById), new { id = category.Id }, dto);
+            var result = new CategoryDto { Id = category.Id, Name = category.Name };
+            return CreatedAtAction(nameof(GetById), new { id = category.Id }, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, CategoryDto dto)
+        public async Task<IActionResult> Update(int id, CategorySaveDto dto)
         {
             var category = await _db.Categories.FindAsync(id);
             if (category == null) return NotFound();
