@@ -1,6 +1,7 @@
 ﻿using LagStore.Api.Data;
 using LagStore.Api.DTOs;
 using LagStore.Api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,6 +39,7 @@ namespace LagStore.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<CategoryDto>> Create(CategorySaveDto dto)
         {
             var category = new Category { Name = dto.Name };
@@ -49,6 +51,7 @@ namespace LagStore.Api.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, CategorySaveDto dto)
         {
             var category = await _db.Categories.FindAsync(id);
@@ -60,6 +63,7 @@ namespace LagStore.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var category = await _db.Categories.FindAsync(id);

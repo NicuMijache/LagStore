@@ -1,6 +1,7 @@
 ﻿using LagStore.Api.Data;
 using LagStore.Api.DTOs;
 using LagStore.Api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -69,6 +70,7 @@ namespace LagStore.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ProductDto>> Create(ProductSaveDto dto)
         {
             if (!await ReferencesExist(dto))
@@ -94,6 +96,7 @@ namespace LagStore.Api.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, ProductSaveDto dto)
         {
             var product = await _db.Products.FindAsync(id);
@@ -116,6 +119,7 @@ namespace LagStore.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var product = await _db.Products.FindAsync(id);

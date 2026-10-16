@@ -1,6 +1,7 @@
 ﻿using LagStore.Api.Data;
 using LagStore.Api.DTOs;
 using LagStore.Api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,6 +51,7 @@ namespace LagStore.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<SupplierDto>> Create(SupplierSaveDto dto)
         {
             var supplier = new Supplier
@@ -72,6 +74,7 @@ namespace LagStore.Api.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, SupplierSaveDto dto)
         {
             var supplier = await _db.Suppliers.FindAsync(id);
@@ -85,6 +88,7 @@ namespace LagStore.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var supplier = await _db.Suppliers.FindAsync(id);

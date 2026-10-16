@@ -1,6 +1,7 @@
 ﻿using LagStore.Api.Data;
 using LagStore.Api.DTOs;
 using LagStore.Api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -52,6 +53,7 @@ namespace LagStore.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<DeliveryMethodDto>> Create(DeliveryMethodSaveDto dto)
         {
             if (dto.EstimatedDaysMin > dto.EstimatedDaysMax)
@@ -79,6 +81,7 @@ namespace LagStore.Api.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, DeliveryMethodSaveDto dto)
         {
             var method = await _db.DeliveryMethods.FindAsync(id);
@@ -96,6 +99,7 @@ namespace LagStore.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var method = await _db.DeliveryMethods.FindAsync(id);
