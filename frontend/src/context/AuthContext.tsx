@@ -2,7 +2,6 @@ import {
   createContext,
   useContext,
   useState,
-  useEffect,
   type ReactNode,
 } from 'react';
 import api from '../api/axios';
@@ -37,10 +36,6 @@ function loadUserFromStorage(): AuthUser | null {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(loadUserFromStorage);
-
-  useEffect(() => {
-    // Keep token in localStorage in sync
-  }, []);
 
   const saveUser = (data: AuthResponse) => {
     const authUser: AuthUser = {

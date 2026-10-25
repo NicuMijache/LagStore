@@ -84,9 +84,6 @@ export default function AdminProducts() {
   }, []);
 
   useEffect(() => {
-    if (reloadKey === 0) {
-      // initial load – loadingList is already true from useState
-    }
     let cancelled = false;
     api
       .get<Product[]>('/products')
