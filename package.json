@@ -1,0 +1,24 @@
+{
+  "name": "comert-electronic",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+  "dev": "concurrently -n api,web -c blue,green \"dotnet run --project backend --launch-profile https\" \"npm --prefix frontend run dev\""
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NicuMijache/LagStore.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/NicuMijache/LagStore/issues"
+  },
+  "homepage": "https://github.com/NicuMijache/LagStore#readme",
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
+}

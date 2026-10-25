@@ -27,6 +27,8 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
     .AddEntityFrameworkStores<AppDbContext>();
 
 var jwt = builder.Configuration.GetSection("Jwt");
+var jwtKey = jwt["Key"]
+    ?? throw new InvalidOperationException("Lipsește Jwt:Key. Setează-l cu: dotnet user-secrets set \"Jwt:Key\" \"<cheie>\"");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -39,7 +41,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwt["Issuer"],
             ValidAudience = jwt["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
             RoleClaimType = ClaimTypes.Role,
             ClockSkew = TimeSpan.Zero
         };
@@ -72,13 +74,16 @@ using (var scope = app.Services.CreateScope())
     var adminEmail = builder.Configuration["SeedAdmin:Email"]!;
     if (await userManager.FindByEmailAsync(adminEmail) == null)
     {
+        var adminPassword = builder.Configuration["SeedAdmin:Password"]
+            ?? throw new InvalidOperationException("Lipsește SeedAdmin:Password. Setează-l cu: dotnet user-secrets set \"SeedAdmin:Password\" \"<parolă>\"");
+
         var admin = new ApplicationUser
         {
             UserName = adminEmail,
             Email = adminEmail,
             FullName = builder.Configuration["SeedAdmin:FullName"]!
         };
-        var result = await userManager.CreateAsync(admin, builder.Configuration["SeedAdmin:Password"]!);
+        var result = await userManager.CreateAsync(admin, adminPassword);
         if (result.Succeeded)
             await userManager.AddToRoleAsync(admin, "Admin");
     }
