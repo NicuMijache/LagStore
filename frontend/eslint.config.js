@@ -19,10 +19,10 @@ export default defineConfig([
       globals: globals.browser,
     },
     rules: {
-      // AuthContext intentionally exports both a component and a hook from the same file
+      // AuthContext and ShopContext intentionally export both a component and a hook from the same file
       'react-refresh/only-export-components': [
         'warn',
-        { allowExportNames: ['useAuth'] },
+        { allowExportNames: ['useAuth', 'useShop'] },
       ],
     },
   },
