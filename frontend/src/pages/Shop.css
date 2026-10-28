@@ -1,0 +1,469 @@
+/* ═══════════════════════════════════════════════════════
+   Pagini de cumpărare: favorite, coș, checkout, comenzi
+   ═══════════════════════════════════════════════════════ */
+.shop-page {
+  min-height: calc(100vh - 64px);
+  padding-bottom: 60px;
+}
+
+.shop-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 36px 24px;
+}
+
+.shop-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.shop-title {
+  font-size: 30px;
+  font-weight: 800;
+  margin: 0 0 6px;
+}
+
+.shop-subtitle {
+  font-size: 14px;
+  margin: 0;
+}
+
+.shop-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 320px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.shop-state-icon {
+  font-size: 48px;
+  margin: 0;
+}
+
+.shop-state p {
+  margin: 0;
+}
+
+.shop-error {
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #fca5a5;
+  margin-bottom: 20px;
+}
+
+.shop-success {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 28px;
+}
+
+.shop-success h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  color: #6ee7b7;
+}
+
+.shop-success p {
+  margin: 0;
+}
+
+.shop-panel {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.shop-panel-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  margin: 0 0 16px;
+}
+
+.wishlist-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Layout cu conținut + rezumat lateral */
+.shop-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 28px;
+  align-items: start;
+}
+
+.shop-sidebar {
+  position: sticky;
+  top: 88px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Rânduri de rezumat (subtotal, livrare, total) */
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-muted);
+  padding: 6px 0;
+}
+
+.summary-row span:last-child {
+  color: var(--text-primary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.summary-total {
+  border-top: 1px solid var(--border-color);
+  margin-top: 8px;
+  padding-top: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.summary-total span:last-child {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.summary-note {
+  font-size: 13px;
+  margin: 12px 0 0;
+}
+
+.summary-items {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0 0 12px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.summary-items li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-muted);
+}
+
+.summary-items li span:last-child {
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+/* Tabel (coș, detalii comandă) */
+.shop-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+}
+
+.shop-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.shop-table thead tr {
+  background: var(--surface);
+}
+
+.shop-table th {
+  text-align: left;
+  padding: 14px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.shop-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.shop-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.shop-table .num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.shop-table-product a {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.shop-table-product a:hover {
+  color: var(--accent-bright);
+}
+
+.shop-table-meta {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.shop-table-warning {
+  display: block;
+  font-size: 12px;
+  color: #fbbf24;
+}
+
+.shop-table-remove {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.shop-table-remove:hover:not(:disabled) {
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.shop-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+/* Checkout */
+.checkout-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.checkout-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.checkout-fields .span-2 {
+  grid-column: span 2;
+}
+
+.field-error {
+  font-size: 12px;
+  color: #fca5a5;
+}
+
+.form-group input.invalid {
+  border-color: rgba(248, 113, 113, 0.6);
+}
+
+.delivery-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.delivery-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.delivery-option:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+.delivery-option.selected {
+  border-color: var(--accent);
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.delivery-option input {
+  accent-color: var(--accent);
+  width: 18px;
+  height: 18px;
+}
+
+.delivery-option-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.delivery-option-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.delivery-option-days {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.delivery-option-price {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.payment-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.06);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+/* Lista de comenzi */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.order-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1.6fr 1fr 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color var(--transition), transform var(--transition);
+}
+
+.order-row:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.order-row-id {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.order-row-muted {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.order-row-total {
+  font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.order-row-arrow {
+  color: var(--text-muted);
+}
+
+/* Etichetă stare comandă */
+.order-status {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  justify-self: start;
+}
+
+.order-status-Plasata     { color: #93c5fd; background: rgba(59, 130, 246, 0.14); }
+.order-status-InProcesare { color: #fcd34d; background: rgba(245, 158, 11, 0.14); }
+.order-status-Expediata   { color: #c4b5fd; background: rgba(139, 92, 246, 0.16); }
+.order-status-Livrata     { color: #6ee7b7; background: rgba(16, 185, 129, 0.14); }
+.order-status-Anulata     { color: #fca5a5; background: rgba(239, 68, 68, 0.14); }
+
+.order-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.order-info-grid p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+
+.order-info-grid .order-notes {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+@media (max-width: 860px) {
+  .shop-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .shop-sidebar {
+    position: static;
+  }
+
+  .order-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .order-row-arrow {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .checkout-fields,
+  .order-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-fields .span-2 {
+    grid-column: auto;
+  }
+}

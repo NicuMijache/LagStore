@@ -1,15 +1,39 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import { getErrorMessage } from '../api/errors';
 import type { Product } from '../types';
+import { useShop } from '../context/ShopContext';
+import WishlistButton from '../components/WishlistButton';
+import QuantitySelector from '../components/QuantitySelector';
 import './ProductDetails.css';
 
 export default function ProductDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { addToCart } = useShop();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const [quantity, setQuantity] = useState(1);
+  const [adding, setAdding] = useState(false);
+  const [cartMessage, setCartMessage] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const handleAddToCart = async () => {
+    if (!product) return;
+    setAdding(true);
+    setCartMessage(null);
+    try {
+      if (await addToCart(product.id, quantity)) {
+        setCartMessage({ ok: true, text: `${quantity} × ${product.name} adăugat în coș.` });
+      }
+    } catch (err) {
+      setCartMessage({ ok: false, text: getErrorMessage(err) });
+    } finally {
+      setAdding(false);
+    }
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -91,6 +115,37 @@ export default function ProductDetails() {
                 {outOfStock ? '✕ Stoc epuizat' : `✓ ${product.stock} bucăți în stoc`}
               </span>
             </div>
+
+            <div className="details-actions">
+              {!outOfStock && (
+                <QuantitySelector
+                  value={quantity}
+                  min={1}
+                  max={product.stock}
+                  onChange={setQuantity}
+                  disabled={adding}
+                />
+              )}
+              <button
+                id="btn-add-to-cart"
+                className="btn btn-primary"
+                onClick={handleAddToCart}
+                disabled={outOfStock || adding}
+              >
+                {outOfStock ? 'Indisponibil' : adding ? 'Se adaugă…' : '🛒 Adaugă în coș'}
+              </button>
+              <WishlistButton productId={product.id} withLabel />
+            </div>
+
+            {cartMessage && (
+              <p
+                className={`details-cart-message ${cartMessage.ok ? 'ok' : 'error'}`}
+                role={cartMessage.ok ? 'status' : 'alert'}
+              >
+                {cartMessage.text}
+                {cartMessage.ok && <> <Link to="/cart">Vezi coșul →</Link></>}
+              </p>
+            )}
           </div>
         </div>
 

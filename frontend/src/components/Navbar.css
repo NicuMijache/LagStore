@@ -63,6 +63,94 @@
   background: rgba(139, 92, 246, 0.1);
 }
 
+/* Meniul de administrare */
+.navbar-dropdown {
+  position: relative;
+}
+
+.navbar-dropdown-toggle {
+  background: none;
+  border: none;
+  font-family: var(--font);
+  cursor: pointer;
+}
+
+.navbar-dropdown-toggle.active {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.navbar-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 210px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  animation: dropdownIn 0.12s ease;
+}
+
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.navbar-dropdown-item {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 9px 12px;
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.navbar-dropdown-item:hover,
+.navbar-dropdown-item.active {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+}
+
+/* Iconițe favorite și coș, cu contor */
+.navbar-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 19px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.navbar-icon:hover {
+  color: #f472b6;
+  background: var(--surface-hover);
+}
+
+.navbar-count {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+}
+
 .navbar-auth {
   display: flex;
   align-items: center;

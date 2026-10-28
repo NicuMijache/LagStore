@@ -1,4 +1,5 @@
 .product-card {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--border-color);
   border-radius: 16px;
@@ -9,7 +10,6 @@
   flex-direction: column;
   gap: 10px;
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
-  cursor: pointer;
 }
 
 .product-card:hover {
@@ -88,4 +88,30 @@
 
 .product-card-stock.out {
   color: #f87171;
+}
+
+.product-card-link {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  text-decoration: none;
+  color: inherit;
+}
+
+.product-card-header {
+  padding-right: 44px;
+}
+
+.product-card-heart {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 1;
+}
+
+.product-card-error {
+  margin: 0;
+  font-size: 12px;
+  color: #fca5a5;
 }

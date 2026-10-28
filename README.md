@@ -184,6 +184,38 @@ Poți rula scriptul de mai multe ori fără probleme: ce există deja e sărit.
 
 ---
 
+## Raportarea II: favorite, coș, comenzi
+
+| Cerință | Ce am făcut |
+|---|---|
+| Flow de administrare produse | Pe lângă produse, adminul gestionează acum din interfață **categoriile, furnizorii și metodele de livrare** (tabel, adăugare, editare, ștergere cu confirmare), plus **comenzile** (listă filtrabilă și schimbarea stării) |
+| Wishlist | Buton inimă pe fiecare produs și pagina **Favorite** (`/wishlist`) |
+| Flow de cumpărare | **Coș** salvat în baza de date (`/cart`) și **checkout** (`/checkout`) cu date de livrare, alegerea metodei de livrare și plata la livrare (ramburs) |
+| Istoric comenzi | Pagina **Comenzile mele** (`/orders`), cu stare colorată, și pagina de detalii/confirmare (`/orders/:id`) |
+
+**Tabele noi:** `WishlistItems`, `CartItems`, `Orders`, `OrderItems` (migrarea `AddWishlistCartOrders`). Toate sunt legate de utilizator, iar endpoint-urile lor cer autentificare.
+
+**Endpoint-uri noi:**
+
+| Rută | Ce face |
+|---|---|
+| `GET/POST/DELETE /api/wishlist[/{productId}]` | Listează, adaugă (fără duplicate) și scoate favorite |
+| `GET/POST/DELETE /api/cart`, `PUT/DELETE /api/cart/{productId}` | Coșul: listare cu totaluri, adăugare, modificare cantitate, ștergere linie, golire |
+| `POST /api/orders` | Plasează comanda din coș |
+| `GET /api/orders`, `GET /api/orders/{id}` | Comenzile proprii (adminul le poate vedea pe toate) |
+| `GET /api/orders/all`, `PUT /api/orders/{id}/status` | Doar admin: toate comenzile și schimbarea stării |
+
+**Reguli importante:**
+
+- **Plasarea comenzii e atomică.** Într-o singură tranzacție, serverul verifică stocul fiecărui produs, îl scade, creează comanda și golește coșul. Dacă un produs nu mai are stoc suficient, nu se salvează nimic, iar clientul vede ce produs e problema.
+- **Prețurile vin doar din baza de date.** Clientul trimite doar ce produse vrea, cantitatea, datele de livrare și metoda aleasă. Subtotalul, costul livrării și totalul le calculează serverul.
+- **Comenzile păstrează un „snapshot”.** Numele și prețul produselor, plus metoda de livrare, se copiază în comandă. Istoricul rămâne corect chiar dacă un produs e scumpit sau șters din catalog.
+- **Stările unei comenzi:** Plasată → În procesare → Expediată → Livrată, sau Anulată. La anulare, produsele se întorc în stoc, iar o comandă anulată nu mai poate fi modificată.
+- **Cantitatea din coș nu poate depăși stocul.** Butoanele de coș sunt dezactivate pentru produsele epuizate.
+- **Nu se colectează date de card.** Singura metodă de plată este rambursul, simulat.
+
+---
+
 ## Securitate și configurare
 
 Cheia de semnare JWT și parola contului de admin **nu sunt salvate în repository**. Pe mediul de dezvoltare stau în **.NET User Secrets**, un fișier local din profilul fiecărui utilizator, în afara proiectului:
