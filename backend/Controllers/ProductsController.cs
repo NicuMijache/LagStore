@@ -1,6 +1,7 @@
 ﻿using LagStore.Api.Data;
 using LagStore.Api.DTOs;
 using LagStore.Api.Models;
+using LagStore.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +13,12 @@ namespace LagStore.Api.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly AppDbContext _db;
+        private readonly IProductImageStorage _images;
 
-        public ProductsController(AppDbContext db)
+        public ProductsController(AppDbContext db, IProductImageStorage images)
         {
             _db = db;
+            _images = images;
         }
 
         private static IQueryable<ProductDto> ToDto(IQueryable<Product> query)
@@ -28,6 +31,7 @@ namespace LagStore.Api.Controllers
                 Specifications = p.Specifications,
                 Price = p.Price,
                 Stock = p.Stock,
+                ImageUrl = p.ImageUrl,
                 CategoryId = p.CategoryId,
                 CategoryName = p.Category.Name,
                 SupplierId = p.SupplierId,
@@ -127,6 +131,41 @@ namespace LagStore.Api.Controllers
 
             _db.Products.Remove(product);
             await _db.SaveChangesAsync();
+            _images.Delete(product.ImageUrl);
+            return NoContent();
+        }
+
+        [HttpPost("{id}/image")]
+        [Authorize(Roles = "Admin")]
+        [RequestSizeLimit(ProductImageStorage.MaxBytes + 64 * 1024)]
+        public async Task<ActionResult<ProductDto>> UploadImage(int id, IFormFile file)
+        {
+            var product = await _db.Products.FindAsync(id);
+            if (product == null) return NotFound();
+
+            var (url, error) = await _images.SaveAsync(file);
+            if (error != null) return BadRequest(error);
+
+            // Poza veche se șterge abia după ce cea nouă a fost salvată
+            var oldUrl = product.ImageUrl;
+            product.ImageUrl = url;
+            await _db.SaveChangesAsync();
+            _images.Delete(oldUrl);
+
+            return await ToDto(_db.Products.Where(p => p.Id == id)).FirstAsync();
+        }
+
+        [HttpDelete("{id}/image")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteImage(int id)
+        {
+            var product = await _db.Products.FindAsync(id);
+            if (product == null) return NotFound();
+
+            var oldUrl = product.ImageUrl;
+            product.ImageUrl = null;
+            await _db.SaveChangesAsync();
+            _images.Delete(oldUrl);
             return NoContent();
         }
     }

@@ -9,6 +9,9 @@
         public decimal Price { get; set; }
         public int Stock { get; set; }
 
+        // Calea relativă a pozei, ex: /uploads/products/abc.jpg; null dacă produsul nu are poză
+        public string? ImageUrl { get; set; }
+
         public int SupplierId { get; set; }
         public Supplier Supplier { get; set; } = null!;
 

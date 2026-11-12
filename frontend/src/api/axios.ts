@@ -1,8 +1,15 @@
 import axios from 'axios';
 
+const API_ORIGIN = 'https://localhost:7209';
+
 const api = axios.create({
-  baseURL: 'https://localhost:7209/api',
+  baseURL: `${API_ORIGIN}/api`,
 });
+
+/** Transformă o cale de pe server (ex: /uploads/products/x.jpg) într-o adresă completă */
+export function assetUrl(path: string): string {
+  return `${API_ORIGIN}${path}`;
+}
 
 // Request interceptor: attach Bearer token
 api.interceptors.request.use((config) => {

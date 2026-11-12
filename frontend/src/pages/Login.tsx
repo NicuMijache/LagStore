@@ -53,22 +53,20 @@ export default function Login() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-logo">
-          <span className="auth-logo-lag">Lag</span>
-          <span className="auth-logo-store">Store</span>
-        </div>
-        <h1 className="auth-title">Autentificare</h1>
-        <p className="auth-subtitle">Bun venit înapoi!</p>
+    <div className="page container auth-page">
+      <div className="auth-intro">
+        <h1 className="display">Autentificare</h1>
+        <p className="lead">Bun venit înapoi!</p>
+      </div>
 
-        {error && (
-          <div className="auth-error" role="alert">
-            {error}
-          </div>
-        )}
+      <div className="auth-column">
+        <form onSubmit={handleSubmit} className="panel auth-form" noValidate>
+          {error && (
+            <div className="auth-error" role="alert">
+              {error}
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit} className="auth-form" noValidate>
           <div className="form-group">
             <label htmlFor="email">Adresă de e-mail</label>
             <input
@@ -98,7 +96,7 @@ export default function Login() {
           <button
             id="btn-submit-login"
             type="submit"
-            className="btn btn-primary btn-full"
+            className="btn btn-full"
             disabled={loading}
           >
             {loading ? 'Se autentifică…' : 'Autentificare'}

@@ -4,6 +4,7 @@ import api from '../api/axios';
 import { getErrorMessage } from '../api/errors';
 import type { Order, OrderStatus } from '../types';
 import OrderStatusBadge from '../components/OrderStatusBadge';
+import { SkeletonRows } from '../components/Skeleton';
 import { formatDate, formatPrice, ORDER_STATUSES, ORDER_STATUS_LABELS } from '../utils/format';
 import './AdminProducts.css';
 import './Products.css';
@@ -71,7 +72,7 @@ export default function AdminOrders() {
           </div>
         </div>
 
-        <div className="category-chips" style={{ marginBottom: 20 }}>
+        <div className="category-chips admin-filters">
           <button className={`chip ${filter === null ? 'chip-active' : ''}`} onClick={() => setFilter(null)}>
             Toate ({orders.length})
           </button>
@@ -89,10 +90,7 @@ export default function AdminOrders() {
         {error && <div className="admin-error" role="alert">{error}</div>}
 
         {loading ? (
-          <div className="admin-loading">
-            <div className="spinner" />
-            <p>Se încarcă comenzile…</p>
-          </div>
+          <SkeletonRows />
         ) : (
           <div className="table-wrapper">
             <table className="admin-table">
@@ -119,7 +117,7 @@ export default function AdminOrders() {
                   visible.map((o) => (
                     <tr key={o.id}>
                       <td className="table-id">{o.id}</td>
-                      <td style={{ whiteSpace: 'nowrap' }}>{formatDate(o.createdAt)}</td>
+                      <td className="table-date">{formatDate(o.createdAt)}</td>
                       <td>
                         <span className="table-name">{o.fullName}</span>
                         <span className="shop-table-meta">{o.customerEmail}</span>

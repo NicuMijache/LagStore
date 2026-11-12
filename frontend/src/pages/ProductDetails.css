@@ -1,238 +1,162 @@
-.details-page {
-  min-height: calc(100vh - 64px);
-  padding-bottom: 60px;
+.details-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: var(--space-16);
+  align-items: start;
 }
 
-.details-container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 32px 24px;
-}
-
-/* Breadcrumb */
-.breadcrumb {
+/* Imaginea mare (placeholder), lipită sub header */
+.details-media {
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-6));
   display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-bottom: 28px;
+  align-items: flex-end;
+  aspect-ratio: 4 / 5;
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
+  background: var(--placeholder-shade), var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--text-xl);
+  font-weight: 500;
+  letter-spacing: var(--tracking-title);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
 }
 
-.breadcrumb a {
-  color: var(--accent);
-  text-decoration: none;
+.details-media--image {
+  padding: 0;
+  overflow: hidden;
 }
 
-.breadcrumb a:hover {
-  text-decoration: underline;
+.details-media--image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.breadcrumb-sep {
-  color: var(--border-color);
-}
-
-/* Header */
-.details-header {
-  margin-bottom: 36px;
-}
-
-.details-category {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--accent);
-  background: rgba(139, 92, 246, 0.1);
-  padding: 4px 12px;
-  border-radius: 20px;
-  margin-bottom: 12px;
+/* Informații */
+.details-info {
+  display: grid;
+  gap: var(--space-6);
+  min-width: 0;
 }
 
 .details-name {
-  font-size: 36px;
-  font-weight: 800;
-  letter-spacing: -1px;
-  color: var(--text-primary);
-  margin: 0 0 20px;
-  line-height: 1.2;
+  font-size: var(--text-detail);
+  font-weight: 500;
+  letter-spacing: var(--tracking-display);
+  line-height: 1.05;
+  overflow-wrap: anywhere;
 }
 
 .details-price-row {
   display: flex;
-  align-items: center;
-  gap: 20px;
   flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-6);
 }
 
 .details-price {
-  font-size: 34px;
-  font-weight: 800;
-  color: var(--text-primary);
-  letter-spacing: -1px;
+  font-size: var(--text-figure);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
 }
 
 .details-stock {
-  font-size: 15px;
-  font-weight: 600;
-  color: #4ade80;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
 }
 
-.details-stock.out {
-  color: #f87171;
+.details-description {
+  max-width: 60ch;
+  color: var(--color-text-body);
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+/* Panoul de cumpărare */
+.details-buy {
+  gap: var(--space-4);
 }
 
 .details-actions {
   display: flex;
-  align-items: center;
-  gap: 12px;
   flex-wrap: wrap;
-  margin-top: 24px;
+  align-items: center;
+  gap: var(--space-3);
 }
 
-.details-cart-message {
-  margin: 14px 0 0;
-  font-size: 14px;
+.details-cart-link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-.details-cart-message.ok {
-  color: #4ade80;
-}
-
-.details-cart-message.error {
-  color: #fca5a5;
-}
-
-/* Body layout */
-.details-body {
+/* Furnizor, livrare, categorie: listă de rânduri */
+.details-facts {
   display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 32px;
-  align-items: start;
-}
-
-/* Main content */
-.details-main {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-}
-
-.details-section {
-  background: var(--surface);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 24px;
-}
-
-.details-section-title {
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--accent);
-  margin: 0 0 16px;
-}
-
-.details-description {
   margin: 0;
-  font-size: 15px;
-  line-height: 1.7;
-  color: var(--text-muted);
-  white-space: pre-line;
+  border-top: 1px solid var(--color-border);
+}
+
+.details-fact {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.details-fact dt {
+  padding-top: var(--space-1);
+}
+
+.details-fact dd {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.details-fact-meta {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* Specificații */
+.details-specs-section {
+  display: grid;
+  gap: var(--space-4);
 }
 
 .details-specs {
   margin: 0;
-  font-family: 'Courier New', Consolas, monospace;
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--text-muted);
-  background: var(--bg);
-  border-radius: 10px;
-  padding: 16px;
-  white-space: pre-wrap;
-  word-break: break-word;
+  padding: var(--space-6);
   overflow-x: auto;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-body);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
-/* Sidebar */
-.details-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.info-card {
-  background: var(--surface);
-  border: 1px solid var(--border-color);
-  border-radius: 14px;
-  padding: 18px 20px;
-}
-
-.info-card-title {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  margin: 0 0 8px;
-}
-
-.info-card-value {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 10px;
-}
-
-.info-card-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.info-tag {
-  font-size: 12px;
-  background: rgba(139, 92, 246, 0.1);
-  color: var(--accent);
-  border-radius: 8px;
-  padding: 4px 10px;
-  font-weight: 500;
-}
-
-/* Back */
-.details-back {
-  margin-top: 36px;
-}
-
-/* States */
-.details-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  min-height: 60vh;
-  color: var(--text-muted);
-  text-align: center;
-}
-
-.details-error {
-  color: #fca5a5;
-}
-
-@media (max-width: 768px) {
-  .details-body {
-    grid-template-columns: 1fr;
+@media (max-width: 860px) {
+  .details-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-8);
   }
 
-  .details-name {
-    font-size: 26px;
+  .details-media {
+    position: static;
+    width: 100%;
+    max-width: 420px;
   }
 
-  .details-price {
-    font-size: 26px;
+  .details-fact {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1);
   }
 }

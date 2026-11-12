@@ -4,6 +4,8 @@ import api from '../api/axios';
 import { getErrorMessage } from '../api/errors';
 import type { Order } from '../types';
 import OrderStatusBadge from '../components/OrderStatusBadge';
+import Icon from '../components/Icon';
+import { SkeletonRows } from '../components/Skeleton';
 import { formatDate, formatPrice } from '../utils/format';
 import './Shop.css';
 
@@ -36,7 +38,7 @@ export default function Orders() {
       <div className="shop-container">
         <div className="shop-header">
           <div>
-            <h1 className="shop-title">📦 Comenzile mele</h1>
+            <h1 className="shop-title">Comenzile mele</h1>
             <p className="shop-subtitle">
               {loading ? 'Se încarcă…' : `${orders.length} comenzi plasate`}
             </p>
@@ -46,15 +48,12 @@ export default function Orders() {
         {error && <div className="shop-error" role="alert">{error}</div>}
 
         {loading ? (
-          <div className="shop-state">
-            <div className="spinner" />
-            <p>Se încarcă istoricul comenzilor…</p>
-          </div>
+          <SkeletonRows />
         ) : !error && orders.length === 0 ? (
-          <div className="shop-state">
-            <p className="shop-state-icon">📦</p>
-            <p>Nu ai plasat încă nicio comandă.</p>
-            <Link to="/" className="btn btn-primary">Mergi la catalog</Link>
+          <div className="empty-state">
+            <h2 className="empty-state-title">Nu ai plasat încă nicio comandă</h2>
+            <p className="empty-state-text">Comenzile tale vor apărea aici, cu starea lor la zi.</p>
+            <Link to="/" className="btn">Mergi la catalog</Link>
           </div>
         ) : (
           <div className="orders-list">
@@ -67,7 +66,7 @@ export default function Orders() {
                   <span className="order-row-total">{formatPrice(o.total)}</span>
                   <span className="order-row-muted"> · {o.itemCount} produse</span>
                 </span>
-                <span className="order-row-arrow">›</span>
+                <span className="order-row-arrow"><Icon name="arrowRight" size={16} /></span>
               </Link>
             ))}
           </div>

@@ -5,6 +5,8 @@ import { getErrorMessage } from '../api/errors';
 import type { Cart as CartData } from '../types';
 import { useShop } from '../context/ShopContext';
 import QuantitySelector from '../components/QuantitySelector';
+import Icon from '../components/Icon';
+import { SkeletonRows } from '../components/Skeleton';
 import { formatPrice } from '../utils/format';
 import './Shop.css';
 
@@ -66,7 +68,7 @@ export default function Cart() {
       <div className="shop-container">
         <div className="shop-header">
           <div>
-            <h1 className="shop-title">🛒 Coșul meu</h1>
+            <h1 className="shop-title">Coșul meu</h1>
             <p className="shop-subtitle">
               {cart ? `${cart.itemCount} produse` : 'Se încarcă…'}
             </p>
@@ -76,22 +78,20 @@ export default function Cart() {
         {error && <div className="shop-error" role="alert">{error}</div>}
 
         {loading ? (
-          <div className="shop-state">
-            <div className="spinner" />
-            <p>Se încarcă coșul…</p>
-          </div>
+          <SkeletonRows />
         ) : !cart ? (
-          <div className="shop-state">
-            <p>Coșul nu a putut fi încărcat.</p>
-            <button className="btn btn-outline" onClick={() => setReloadKey((k) => k + 1)}>
+          <div className="empty-state">
+            <h2 className="empty-state-title">Coșul nu a putut fi încărcat</h2>
+            <p className="empty-state-text">Verifică conexiunea și încearcă din nou.</p>
+            <button className="btn" onClick={() => setReloadKey((k) => k + 1)}>
               Reîncearcă
             </button>
           </div>
         ) : cart.items.length === 0 ? (
-          <div className="shop-state">
-            <p className="shop-state-icon">🛒</p>
-            <p>Coșul tău este gol.</p>
-            <Link to="/" className="btn btn-primary">Mergi la catalog</Link>
+          <div className="empty-state">
+            <h2 className="empty-state-title">Coșul tău este gol</h2>
+            <p className="empty-state-text">Adaugă produse din catalog și le vei găsi aici.</p>
+            <Link to="/" className="btn">Mergi la catalog</Link>
           </div>
         ) : (
           <div className="shop-layout">
@@ -115,7 +115,7 @@ export default function Cart() {
                           <span className="shop-table-meta">{item.categoryName}</span>
                           {item.quantity > item.stock && (
                             <span className="shop-table-warning">
-                              ⚠ Mai sunt doar {item.stock} bucăți în stoc
+                              Mai sunt doar {item.stock} bucăți în stoc
                             </span>
                           )}
                         </td>
@@ -138,7 +138,7 @@ export default function Cart() {
                             aria-label={`Șterge ${item.productName} din coș`}
                             title="Șterge din coș"
                           >
-                            ✕
+                            <Icon name="close" size={18} />
                           </button>
                         </td>
                       </tr>
@@ -148,7 +148,10 @@ export default function Cart() {
               </div>
 
               <div className="shop-actions">
-                <Link to="/" className="btn btn-outline">← Continuă cumpărăturile</Link>
+                <Link to="/" className="btn btn-outline">
+                  <Icon name="arrowLeft" size={16} />
+                  Continuă cumpărăturile
+                </Link>
                 <button className="btn btn-danger" onClick={clearCart} disabled={busyId !== null}>
                   Golește coșul
                 </button>
@@ -172,12 +175,12 @@ export default function Cart() {
                 </div>
                 <button
                   id="btn-checkout"
-                  className="btn btn-primary btn-full"
-                  style={{ marginTop: 16 }}
+                  className="btn btn-full"
                   onClick={() => navigate('/checkout')}
                   disabled={hasStockProblem || busyId !== null}
                 >
-                  Continuă spre comandă →
+                  Continuă spre comandă
+                  <Icon name="arrowRight" size={16} />
                 </button>
                 {hasStockProblem && (
                   <p className="summary-note">Ajustează cantitățile marcate înainte de a continua.</p>

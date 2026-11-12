@@ -1,0 +1,24 @@
+.footer {
+  margin-top: var(--space-24);
+  border-top: 1px solid var(--color-border);
+}
+
+.footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-8);
+  padding-block: var(--space-8);
+  font-size: var(--text-sm);
+}
+
+.footer-brand {
+  font-weight: 600;
+  letter-spacing: var(--tracking-logo);
+  text-transform: uppercase;
+}
+
+.footer-note {
+  color: var(--color-text-muted);
+}

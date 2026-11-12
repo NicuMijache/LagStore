@@ -1,6 +1,8 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 import api from '../api/axios';
 import { getErrorMessage } from '../api/errors';
+import Icon from './Icon';
+import { SkeletonRows } from './Skeleton';
 import '../pages/AdminProducts.css';
 
 export type FormValues = Record<string, string>;
@@ -168,10 +170,7 @@ export default function AdminCatalogPage<T extends { id: number }>({
         {listError && <div className="admin-error" role="alert">{listError}</div>}
 
         {loading ? (
-          <div className="admin-loading">
-            <div className="spinner" />
-            <p>Se încarcă…</p>
-          </div>
+          <SkeletonRows />
         ) : (
           <div className="table-wrapper">
             <table className="admin-table">
@@ -225,7 +224,9 @@ export default function AdminCatalogPage<T extends { id: number }>({
                 <h2 className="modal-title">
                   {editingId !== null ? `Editează ${singular}` : `Adaugă ${singular}`}
                 </h2>
-                <button className="modal-close" onClick={closeForm} aria-label="Închide">✕</button>
+                <button className="modal-close" onClick={closeForm} aria-label="Închide">
+                  <Icon name="close" size={18} />
+                </button>
               </div>
 
               {formError && <div className="admin-error" role="alert">{formError}</div>}

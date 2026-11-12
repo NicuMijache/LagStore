@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import Navbar from './components/Navbar'
+import Footer from './components/Footer'
 import ProtectedRoute from './components/ProtectedRoute'
 import Products from './pages/Products'
 import ProductDetails from './pages/ProductDetails'
@@ -44,6 +45,7 @@ function App() {
           <Route path="/admin/orders" element={adminOnly(<AdminOrders />)} />
         </Routes>
       </main>
+      <Footer />
     </>
   )
 }
