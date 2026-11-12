@@ -2,7 +2,59 @@
 
 **LagStore** este un magazin online de periferice gaming (mouse-uri, tastaturi, căști, monitoare, scaune și altele), realizat pentru materia **Comerț Electronic**.
 
-Acest document descrie ce am construit în **Raportarea I**: catalogul de produse, autentificarea și împărțirea pe roluri.
+Documentul descrie ce am construit până acum:
+
+- **Raportarea I:** catalogul de produse, autentificarea și împărțirea pe roluri.
+- **Raportarea II:** favorite, coș, comenzi și administrarea completă a catalogului.
+- **După Raportarea II:** poze pentru produse și un design nou, monocrom.
+
+---
+
+## Cum pornești proiectul
+
+Ai nevoie de **.NET 10 SDK**, **Node.js** și **SQL Server LocalDB** (vine cu Visual Studio).
+
+**1. Secretele** (o singură dată, vezi [Securitate și configurare](#securitate-și-configurare)):
+
+```bash
+cd backend
+dotnet user-secrets set "Jwt:Key" "<o cheie lungă și aleatorie, minim 32 de caractere>"
+dotnet user-secrets set "SeedAdmin:Password" "<parola adminului>"
+```
+
+**2. Baza de date** (prima dată și după fiecare migrare nouă):
+
+```bash
+cd backend
+dotnet ef database update
+```
+
+**3. Dependențele** (o singură dată):
+
+```bash
+npm install
+npm --prefix frontend install
+```
+
+**4. Pornirea**, din folderul principal. Comanda pornește în același timp backend-ul și frontend-ul:
+
+```bash
+npm run dev
+```
+
+| Ce | Unde |
+|---|---|
+| Magazinul (frontend) | http://localhost:5173 |
+| API-ul | https://localhost:7209/api |
+| Swagger | https://localhost:7209/swagger |
+
+La prima pornire, browserul poate refuza certificatul HTTPS local al API-ului. Deschide o dată https://localhost:7209/swagger și acceptă certificatul.
+
+**5. Date de test** (opțional, cu API-ul pornit). Detalii în [Date de test](#date-de-test).
+
+```powershell
+$env:NODE_TLS_REJECT_UNAUTHORIZED=0; $env:ADMIN_PASSWORD="<parola adminului>"; node scripts/seed.mjs
+```
 
 ---
 
@@ -26,6 +78,7 @@ Acest document descrie ce am construit în **Raportarea I**: catalogul de produs
 | Bază de date | SQL Server LocalDB, prin Entity Framework Core (code-first, cu migrări) |
 | Autentificare | ASP.NET Core Identity + JWT Bearer |
 | Frontend | React 19 + TypeScript, construit cu Vite |
+| Stilizare | CSS simplu, cu variabile (design tokens) într-un singur fișier |
 | Comunicare | Axios, cu interceptori pentru token |
 | Documentare API | Swagger (`/swagger`) |
 
@@ -39,18 +92,22 @@ LagStore/
 │   ├── Models/           Entitățile din baza de date
 │   ├── DTOs/             Obiectele trimise și primite prin API
 │   ├── Controllers/      Endpoint-urile REST
-│   ├── Services/         Generarea tokenului JWT
+│   ├── Services/         Generarea tokenului JWT și salvarea pozelor
 │   ├── Data/             AppDbContext (EF Core + Identity)
-│   └── Migrations/       Istoricul schemei bazei de date
+│   ├── Migrations/       Istoricul schemei bazei de date
+│   └── wwwroot/uploads/  Pozele produselor (create la rulare, nu sunt în repository)
 ├── frontend/             Aplicația React
 │   └── src/
-│       ├── api/          Clientul Axios
-│       ├── context/      Starea de autentificare (AuthContext)
-│       ├── components/   Navbar, ProductCard, ProtectedRoute
+│       ├── api/          Clientul Axios și mesajele de eroare
+│       ├── context/      Starea de autentificare (AuthContext) și de cumpărare (ShopContext)
+│       ├── components/   Header, footer, card de produs, iconițe, skeleton și altele
 │       ├── pages/        Paginile aplicației
-│       └── types/        Tipurile TypeScript
-└── scripts/
-    └── seed.mjs          Populează catalogul cu date de test
+│       ├── styles/       tokens.css: culorile, fonturile, spațierile
+│       ├── types/        Tipurile TypeScript
+│       └── utils/        Formatarea prețurilor și a datelor
+├── scripts/
+│   └── seed.mjs          Populează catalogul cu date de test
+└── package.json          `npm run dev` pornește backend-ul și frontend-ul împreună
 ```
 
 ---
@@ -70,6 +127,7 @@ erDiagram
         string Specifications
         decimal Price
         int Stock
+        string ImageUrl
     }
     CATEGORY {
         int Id
@@ -91,8 +149,10 @@ erDiagram
 ```
 
 - Fiecare produs aparține **unei** categorii, **unui** furnizor și **unei** metode de livrare.
+- `ImageUrl` e opțional: produsele fără poză au un placeholder cu numele scris mare.
 - Prețurile sunt stocate ca `decimal(18,2)`, ca să nu apară erori de rotunjire.
 - Utilizatorii sunt gestionați de **ASP.NET Core Identity** (`ApplicationUser`, extins cu `FullName`), în aceeași bază de date.
+- Tabelele pentru favorite, coș și comenzi sunt descrise la [Raportarea II](#raportarea-ii-favorite-coș-comenzi).
 
 ---
 
@@ -104,7 +164,7 @@ Toate rutele încep cu `/api`.
 
 | Resursă | Citire (oricine) | Scriere (doar Admin) |
 |---|---|---|
-| `/products` | `GET` listă, `GET /{id}` | `POST`, `PUT /{id}`, `DELETE /{id}` |
+| `/products` | `GET` listă, `GET /{id}` | `POST`, `PUT /{id}`, `DELETE /{id}`, `POST /{id}/image`, `DELETE /{id}/image` |
 | `/categories` | `GET` listă, `GET /{id}` | `POST`, `PUT /{id}`, `DELETE /{id}` |
 | `/suppliers` | `GET` listă, `GET /{id}` | `POST`, `PUT /{id}`, `DELETE /{id}` |
 | `/deliverymethods` | `GET` listă, `GET /{id}` | `POST`, `PUT /{id}`, `DELETE /{id}` |
@@ -158,14 +218,24 @@ sequenceDiagram
 | Detalii produs | `/products/:id` | Oricine |
 | Autentificare | `/login` | Oricine |
 | Înregistrare | `/register` | Oricine |
+| Favorite | `/wishlist` | Utilizator logat |
+| Coș | `/cart` | Utilizator logat |
+| Finalizare comandă | `/checkout` | Utilizator logat |
+| Comenzile mele | `/orders` | Utilizator logat |
+| Detalii comandă | `/orders/:id` | Utilizator logat (doar comenzile proprii); adminul le vede pe toate |
 | Administrare produse | `/admin/products` | Doar Admin |
+| Administrare categorii | `/admin/categories` | Doar Admin |
+| Administrare furnizori | `/admin/suppliers` | Doar Admin |
+| Administrare metode de livrare | `/admin/delivery-methods` | Doar Admin |
+| Administrare comenzi | `/admin/orders` | Doar Admin |
 
 Pe scurt, ce face fiecare parte:
 
-- **Catalogul** afișează produsele în carduri. Le poți filtra cu chip-uri de categorie și căuta după nume; căutarea pornește la 400 ms după ce te oprești din tastat.
-- **Pagina de detalii** arată descrierea, specificațiile tehnice, furnizorul, metoda de livrare (cost și număr de zile) și stocul.
-- **Pagina de administrare** are un tabel cu toate produsele și un formular modal pentru adăugare și editare. Categoria, furnizorul și metoda de livrare se aleg din dropdown-uri, iar ștergerea cere confirmare.
-- **`ProtectedRoute`** blochează pagina de admin pentru vizitatori și clienți, iar **Navbar-ul** arată linkul de administrare doar adminului.
+- **Catalogul** afișează produsele în carduri, cu poza sau un placeholder cu numele. Le poți filtra cu chip-uri de categorie și căuta după nume; căutarea pornește la 400 ms după ce te oprești din tastat.
+- **Pagina de detalii** arată poza, descrierea, specificațiile tehnice, furnizorul, metoda de livrare (cost și număr de zile) și stocul. De aici alegi cantitatea și adaugi în coș sau la favorite.
+- **Pagina de administrare a produselor** are un tabel cu miniaturi și un formular pentru adăugare și editare. Categoria, furnizorul și metoda de livrare se aleg din dropdown-uri, poza se alege din calculator, iar ștergerea cere confirmare.
+- **`ProtectedRoute`** blochează paginile pentru cine nu are voie: vizitatorii sunt trimiși la login, clienții nu pot intra în administrare.
+- **Header-ul** arată favoritele și coșul cu numărul de produse, un meniu de cont și, doar pentru admin, meniul de administrare. Pe telefon, linkurile se mută într-un meniu hamburger.
 - **Interceptorii Axios** atașează automat tokenul la fiecare cerere și deconectează utilizatorul când tokenul nu mai e valid.
 - Formularele sunt validate și în browser, înainte de trimitere, iar mesajele de eroare sunt în română.
 
@@ -178,9 +248,9 @@ Scriptul [`scripts/seed.mjs`](scripts/seed.mjs) populează catalogul **prin API*
 - **8 categorii:** mouse-uri, tastaturi, căști, monitoare, mousepad-uri, scaune gaming, controllere, microfoane și webcam-uri
 - **8 furnizori:** Logitech, Razer, SteelSeries, Corsair, HyperX, ASUS ROG, Samsung, Arozzi
 - **5 metode de livrare:** de la ridicare gratuită din magazin până la livrare voluminoasă
-- **46 de produse**, fiecare cu descriere și specificații reale
+- **46 de produse**, fiecare cu descriere și specificații reale, fără poze
 
-Poți rula scriptul de mai multe ori fără probleme: ce există deja e sărit.
+Poți rula scriptul de mai multe ori fără probleme: ce există deja e sărit. Parola adminului se dă prin variabila `ADMIN_PASSWORD`, iar adresa API-ului prin `API_URL` (implicit `https://localhost:7209/api`).
 
 ---
 
@@ -191,7 +261,7 @@ Poți rula scriptul de mai multe ori fără probleme: ce există deja e sărit.
 | Flow de administrare produse | Pe lângă produse, adminul gestionează acum din interfață **categoriile, furnizorii și metodele de livrare** (tabel, adăugare, editare, ștergere cu confirmare), plus **comenzile** (listă filtrabilă și schimbarea stării) |
 | Wishlist | Buton inimă pe fiecare produs și pagina **Favorite** (`/wishlist`) |
 | Flow de cumpărare | **Coș** salvat în baza de date (`/cart`) și **checkout** (`/checkout`) cu date de livrare, alegerea metodei de livrare și plata la livrare (ramburs) |
-| Istoric comenzi | Pagina **Comenzile mele** (`/orders`), cu stare colorată, și pagina de detalii/confirmare (`/orders/:id`) |
+| Istoric comenzi | Pagina **Comenzile mele** (`/orders`), cu eticheta stării, și pagina de detalii/confirmare (`/orders/:id`) |
 
 **Tabele noi:** `WishlistItems`, `CartItems`, `Orders`, `OrderItems` (migrarea `AddWishlistCartOrders`). Toate sunt legate de utilizator, iar endpoint-urile lor cer autentificare.
 
@@ -210,9 +280,36 @@ Poți rula scriptul de mai multe ori fără probleme: ce există deja e sărit.
 - **Plasarea comenzii e atomică.** Într-o singură tranzacție, serverul verifică stocul fiecărui produs, îl scade, creează comanda și golește coșul. Dacă un produs nu mai are stoc suficient, nu se salvează nimic, iar clientul vede ce produs e problema.
 - **Prețurile vin doar din baza de date.** Clientul trimite doar ce produse vrea, cantitatea, datele de livrare și metoda aleasă. Subtotalul, costul livrării și totalul le calculează serverul.
 - **Comenzile păstrează un „snapshot”.** Numele și prețul produselor, plus metoda de livrare, se copiază în comandă. Istoricul rămâne corect chiar dacă un produs e scumpit sau șters din catalog.
-- **Stările unei comenzi:** Plasată → În procesare → Expediată → Livrată, sau Anulată. La anulare, produsele se întorc în stoc, iar o comandă anulată nu mai poate fi modificată.
+- **Stările unei comenzi:** Plasată, În procesare, Expediată, Livrată sau Anulată. Adminul poate alege orice stare; doar o comandă anulată nu mai poate fi modificată. La anulare, produsele se întorc în stoc.
 - **Cantitatea din coș nu poate depăși stocul.** Butoanele de coș sunt dezactivate pentru produsele epuizate.
 - **Nu se colectează date de card.** Singura metodă de plată este rambursul, simulat.
+
+---
+
+## Poze pentru produse
+
+Adminul poate pune câte o poză la fiecare produs, din formularul de adăugare sau editare.
+
+- **Unde ajung:** în `backend/wwwroot/uploads/products/`, servite de API la adresa `/uploads/products/...`. Folderul e trecut în `.gitignore`, deci pozele nu ajung pe GitHub.
+- **Ce se acceptă:** JPG, PNG sau WEBP, maxim 5 MB. Serverul verifică tipul după conținutul fișierului, nu după nume, și îi dă un nume nou, aleatoriu.
+- **Curățenie automată:** când schimbi poza sau ștergi produsul, fișierul vechi e șters de pe disc.
+- **Migrare:** `AddProductImage` adaugă coloana `ImageUrl` în tabelul `Products`.
+
+| Rută | Ce face |
+|---|---|
+| `POST /api/products/{id}/image` | Doar admin: încarcă poza (`multipart/form-data`, câmpul `file`) și înlocuiește poza veche |
+| `DELETE /api/products/{id}/image` | Doar admin: scoate poza produsului |
+
+---
+
+## Design
+
+Interfața folosește un stil **monocrom, „editorial”**: alb, negru și gri, tipografie mare (fontul **Manrope**), contururi fine în loc de umbre și butoane rotunjite. Culoarea vine doar din pozele produselor; singura excepție e confirmarea verde a unei comenzi plasate.
+
+- Toate culorile, mărimile, spațierile și duratele animațiilor sunt variabile CSS în [`frontend/src/styles/tokens.css`](frontend/src/styles/tokens.css). Componentele nu au valori scrise direct.
+- În timpul încărcării se afișează **skeleton-uri** (blocuri gri cu forma conținutului), iar listele goale au un mesaj și un buton cu ce poți face mai departe.
+- Iconițele sunt SVG-uri simple ([`Icon.tsx`](frontend/src/components/Icon.tsx)), nu emoji.
+- Layout-ul funcționează și pe telefon: header cu meniu hamburger, catalog pe două coloane, tabelele din coș și comenzi devin rânduri.
 
 ---
 
