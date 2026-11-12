@@ -6,6 +6,8 @@ import type { Product } from '../types';
 import { useShop } from '../context/ShopContext';
 import WishlistButton from '../components/WishlistButton';
 import QuantitySelector from '../components/QuantitySelector';
+import Icon from '../components/Icon';
+import { SkeletonDetail } from '../components/Skeleton';
 import './ProductDetails.css';
 
 export default function ProductDetails() {
@@ -63,22 +65,33 @@ export default function ProductDetails() {
     return () => { cancelled = true; };
   }, [id]);
 
+  const backLink = (
+    <Link to="/" className="back-link" id="btn-back-to-products">
+      <Icon name="arrowLeft" size={16} />
+      Înapoi la produse
+    </Link>
+  );
+
   if (loading) {
     return (
-      <div className="details-state">
-        <div className="spinner" />
-        <p>Se încarcă produsul…</p>
+      <div className="page page--detail container">
+        {backLink}
+        <SkeletonDetail />
       </div>
     );
   }
 
   if (error || !product) {
     return (
-      <div className="details-state details-error">
-        <p>{error || 'Produsul nu a putut fi afișat.'}</p>
-        <button className="btn btn-outline" onClick={() => navigate('/')}>
-          Înapoi la produse
-        </button>
+      <div className="page page--detail container">
+        {backLink}
+        <div className="empty-state" role="alert">
+          <h1 className="empty-state-title">{error || 'Produsul nu a putut fi afișat.'}</h1>
+          <p className="empty-state-text">Poate a fost scos din catalog. Caută alt produs în lista completă.</p>
+          <button className="btn" onClick={() => navigate('/')}>
+            Înapoi la produse
+          </button>
+        </div>
       </div>
     );
   }
@@ -86,36 +99,37 @@ export default function ProductDetails() {
   const outOfStock = product.stock === 0;
 
   return (
-    <div className="details-page">
-      <div className="details-container">
-        {/* Breadcrumb */}
-        <nav className="breadcrumb" aria-label="Navigare">
-          <Link to="/">Produse</Link>
-          <span className="breadcrumb-sep">›</span>
+    <div className="page page--detail container details-page">
+      {backLink}
+
+      <div className="details-layout">
+        {/* Produsele nu au imagini: placeholder tipografic */}
+        <div className="details-media" aria-hidden="true">
           <span>{product.name}</span>
-        </nav>
+        </div>
 
-        {/* Product header */}
-        <div className="details-header">
-          <div className="details-header-left">
-            <span className="details-category">{product.categoryName}</span>
-            <h1 className="details-name">{product.name}</h1>
+        <div className="details-info">
+          <span className="eyebrow">{product.categoryName}</span>
+          <h1 className="details-name">{product.name}</h1>
 
-            <div className="details-price-row">
-              <span className="details-price">
-                {product.price.toLocaleString('ro-RO', {
-                  style: 'currency',
-                  currency: 'RON',
-                  maximumFractionDigits: 2,
-                })}
-              </span>
-              <span
-                className={`details-stock ${outOfStock ? 'out' : ''}`}
-              >
-                {outOfStock ? '✕ Stoc epuizat' : `✓ ${product.stock} bucăți în stoc`}
-              </span>
-            </div>
+          <div className="details-price-row">
+            <span className="details-price">
+              {product.price.toLocaleString('ro-RO', {
+                style: 'currency',
+                currency: 'RON',
+                maximumFractionDigits: 2,
+              })}
+            </span>
+            <span className="details-stock">
+              {outOfStock ? 'Stoc epuizat' : `${product.stock} bucăți în stoc`}
+            </span>
+          </div>
 
+          {product.description && (
+            <p className="details-description">{product.description}</p>
+          )}
+
+          <section className="panel details-buy" aria-label="Cumpărare">
             <div className="details-actions">
               {!outOfStock && (
                 <QuantitySelector
@@ -126,60 +140,38 @@ export default function ProductDetails() {
                   disabled={adding}
                 />
               )}
-              <button
-                id="btn-add-to-cart"
-                className="btn btn-primary"
-                onClick={handleAddToCart}
-                disabled={outOfStock || adding}
-              >
-                {outOfStock ? 'Indisponibil' : adding ? 'Se adaugă…' : '🛒 Adaugă în coș'}
-              </button>
               <WishlistButton productId={product.id} withLabel />
             </div>
+            <button
+              id="btn-add-to-cart"
+              className="btn btn-full"
+              onClick={handleAddToCart}
+              disabled={outOfStock || adding}
+            >
+              {outOfStock ? 'Indisponibil' : adding ? 'Se adaugă…' : 'Adaugă în coș'}
+            </button>
 
             {cartMessage && (
               <p
-                className={`details-cart-message ${cartMessage.ok ? 'ok' : 'error'}`}
+                className={cartMessage.ok ? 'form-note' : 'form-alert'}
                 role={cartMessage.ok ? 'status' : 'alert'}
               >
                 {cartMessage.text}
-                {cartMessage.ok && <> <Link to="/cart">Vezi coșul →</Link></>}
+                {cartMessage.ok && <> <Link to="/cart" className="details-cart-link">Vezi coșul</Link></>}
               </p>
             )}
-          </div>
-        </div>
+          </section>
 
-        <div className="details-body">
-          {/* Left: description + specs */}
-          <div className="details-main">
-            {product.description && (
-              <section className="details-section">
-                <h2 className="details-section-title">Descriere</h2>
-                <p className="details-description">{product.description}</p>
-              </section>
-            )}
-
-            {product.specifications && (
-              <section className="details-section">
-                <h2 className="details-section-title">Specificații tehnice</h2>
-                <pre className="details-specs">{product.specifications}</pre>
-              </section>
-            )}
-          </div>
-
-          {/* Right: info cards */}
-          <aside className="details-sidebar">
-            <div className="info-card">
-              <h3 className="info-card-title">Furnizor</h3>
-              <p className="info-card-value">{product.supplierName}</p>
+          <dl className="details-facts">
+            <div className="details-fact">
+              <dt className="eyebrow">Furnizor</dt>
+              <dd>{product.supplierName}</dd>
             </div>
-
-            <div className="info-card">
-              <h3 className="info-card-title">Livrare</h3>
-              <p className="info-card-value">{product.deliveryMethodName}</p>
-              <div className="info-card-meta">
-                <span className="info-tag">
-                  💰{' '}
+            <div className="details-fact">
+              <dt className="eyebrow">Livrare</dt>
+              <dd>
+                {product.deliveryMethodName}
+                <span className="details-fact-meta">
                   {product.deliveryPrice === 0
                     ? 'Gratuită'
                     : product.deliveryPrice.toLocaleString('ro-RO', {
@@ -187,24 +179,23 @@ export default function ProductDetails() {
                         currency: 'RON',
                         maximumFractionDigits: 2,
                       })}
+                  {' · '}
+                  {product.estimatedDaysMin}–{product.estimatedDaysMax} zile
                 </span>
-                <span className="info-tag">
-                  📦 {product.estimatedDaysMin}–{product.estimatedDaysMax} zile
-                </span>
-              </div>
+              </dd>
             </div>
-
-            <div className="info-card">
-              <h3 className="info-card-title">Categorie</h3>
-              <p className="info-card-value">{product.categoryName}</p>
+            <div className="details-fact">
+              <dt className="eyebrow">Categorie</dt>
+              <dd>{product.categoryName}</dd>
             </div>
-          </aside>
-        </div>
+          </dl>
 
-        <div className="details-back">
-          <Link to="/" className="btn btn-outline" id="btn-back-to-products">
-            ← Înapoi la produse
-          </Link>
+          {product.specifications && (
+            <section className="details-specs-section">
+              <h2 className="panel-title">Specificații tehnice</h2>
+              <pre className="details-specs">{product.specifications}</pre>
+            </section>
+          )}
         </div>
       </div>
     </div>

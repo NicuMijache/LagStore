@@ -69,22 +69,20 @@ export default function Register() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-logo">
-          <span className="auth-logo-lag">Lag</span>
-          <span className="auth-logo-store">Store</span>
-        </div>
-        <h1 className="auth-title">Creează cont</h1>
-        <p className="auth-subtitle">Alătură-te comunității LagStore</p>
+    <div className="page container auth-page">
+      <div className="auth-intro">
+        <h1 className="display">Creează cont</h1>
+        <p className="lead">Alătură-te comunității LagStore</p>
+      </div>
 
-        {error && (
-          <div className="auth-error" role="alert">
-            {error}
-          </div>
-        )}
+      <div className="auth-column">
+        <form onSubmit={handleSubmit} className="panel auth-form" noValidate>
+          {error && (
+            <div className="auth-error" role="alert">
+              {error}
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit} className="auth-form" noValidate>
           <div className="form-group">
             <label htmlFor="fullName">Nume complet</label>
             <input
@@ -127,7 +125,7 @@ export default function Register() {
           <button
             id="btn-submit-register"
             type="submit"
-            className="btn btn-primary btn-full"
+            className="btn btn-full"
             disabled={loading}
           >
             {loading ? 'Se creează contul…' : 'Înregistrare'}

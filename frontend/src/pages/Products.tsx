@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import api from '../api/axios';
 import type { Product, Category } from '../types';
 import ProductCard from '../components/ProductCard';
+import Icon from '../components/Icon';
+import { SkeletonCards } from '../components/Skeleton';
 import './Products.css';
 
 export default function Products() {
@@ -61,21 +63,20 @@ export default function Products() {
   };
 
   return (
-    <div className="products-page">
-      {/* Hero banner */}
-      <div className="products-hero">
-        <h1 className="products-hero-title">
-          Periferice Gaming Premium
-        </h1>
-        <p className="products-hero-subtitle">
-          Găsește echipamentul perfect pentru setup-ul tău
+    <div className="page container products-page">
+      <header className="page-header">
+        <h1 className="display">Periferice Gaming Premium</h1>
+        <p className="lead">Găsește echipamentul perfect pentru setup-ul tău</p>
+        <p className="eyebrow" aria-live="polite">
+          {loading ? 'Se încarcă…' : `${products.length} ${products.length === 1 ? 'produs' : 'produse'}`}
         </p>
-      </div>
+      </header>
 
       {/* Filters */}
       <div className="products-filters">
         <div className="search-wrapper">
-          <span className="search-icon">🔍</span>
+          <span className="search-icon"><Icon name="search" /></span>
+          <label htmlFor="search-input" className="visually-hidden">Caută produse</label>
           <input
             id="search-input"
             type="text"
@@ -86,11 +87,12 @@ export default function Products() {
           />
           {search && (
             <button
-              className="search-clear"
+              className="search-clear icon-btn"
               onClick={() => setSearch('')}
               title="Șterge căutarea"
+              aria-label="Șterge căutarea"
             >
-              ✕
+              <Icon name="close" size={16} />
             </button>
           )}
         </div>
@@ -121,23 +123,21 @@ export default function Products() {
       {/* Content */}
       <div className="products-content">
         {loading ? (
-          <div className="state-box">
-            <div className="spinner" />
-            <p>Se încarcă produsele…</p>
-          </div>
+          <SkeletonCards />
         ) : error ? (
-          <div className="state-box state-error">
-            <p>{error}</p>
-            <button className="btn btn-outline" onClick={handleRetry}>
+          <div className="empty-state" role="alert">
+            <h2 className="empty-state-title">Catalogul nu s-a încărcat</h2>
+            <p className="empty-state-text">{error}</p>
+            <button className="btn" onClick={handleRetry}>
               Reîncearcă
             </button>
           </div>
         ) : products.length === 0 ? (
-          <div className="state-box">
-            <p className="state-empty-icon">🎮</p>
-            <p>Niciun produs nu corespunde criteriilor selectate.</p>
+          <div className="empty-state">
+            <h2 className="empty-state-title">Niciun rezultat</h2>
+            <p className="empty-state-text">Niciun produs nu corespunde criteriilor selectate.</p>
             <button
-              className="btn btn-outline"
+              className="btn"
               onClick={() => {
                 setSearch('');
                 setSelectedCategory(null);
