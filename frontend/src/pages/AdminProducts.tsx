@@ -8,6 +8,8 @@ import {
 import api from '../api/axios';
 import type { Product, ProductSave, Category, Supplier, DeliveryMethod } from '../types';
 import axios from 'axios';
+import Icon from '../components/Icon';
+import { SkeletonRows } from '../components/Skeleton';
 import './AdminProducts.css';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
@@ -216,10 +218,7 @@ export default function AdminProducts() {
 
         {/* Table */}
         {loadingList ? (
-          <div className="admin-loading">
-            <div className="spinner" />
-            <p>Se încarcă produsele…</p>
-          </div>
+          <SkeletonRows count={6} />
         ) : (
           <div className="table-wrapper">
             <table className="admin-table">
@@ -297,7 +296,7 @@ export default function AdminProducts() {
                   {editingId !== null ? 'Editează produs' : 'Adaugă produs nou'}
                 </h2>
                 <button className="modal-close" onClick={closeForm} aria-label="Închide">
-                  ✕
+                  <Icon name="close" size={18} />
                 </button>
               </div>
 
