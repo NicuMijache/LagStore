@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import api from '../api/axios';
+import api, { assetUrl } from '../api/axios';
 import { getErrorMessage } from '../api/errors';
 import type { Product } from '../types';
 import { useShop } from '../context/ShopContext';
@@ -103,10 +103,16 @@ export default function ProductDetails() {
       {backLink}
 
       <div className="details-layout">
-        {/* Produsele nu au imagini: placeholder tipografic */}
-        <div className="details-media" aria-hidden="true">
-          <span>{product.name}</span>
-        </div>
+        {product.imageUrl ? (
+          <div className="details-media details-media--image">
+            <img src={assetUrl(product.imageUrl)} alt={product.name} />
+          </div>
+        ) : (
+          /* Fără poză: placeholder tipografic */
+          <div className="details-media" aria-hidden="true">
+            <span>{product.name}</span>
+          </div>
+        )}
 
         <div className="details-info">
           <span className="eyebrow">{product.categoryName}</span>

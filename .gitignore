@@ -480,3 +480,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Pozele produselor încărcate de admin (nu se pun în repository)
+backend/wwwroot/uploads/

@@ -5,7 +5,7 @@ import {
   type FormEvent,
   type ChangeEvent,
 } from 'react';
-import api from '../api/axios';
+import api, { assetUrl } from '../api/axios';
 import type { Product, ProductSave, Category, Supplier, DeliveryMethod } from '../types';
 import axios from 'axios';
 import Icon from '../components/Icon';
@@ -37,6 +37,11 @@ function extractError(err: unknown): string {
 
   return `Eroare ${status ?? ''}: cererea nu a putut fi procesată.`;
 }
+
+// ─── poze ────────────────────────────────────────────────────────────────────
+
+const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
 // ─── empty form ──────────────────────────────────────────────────────────────
 
@@ -71,6 +76,12 @@ export default function AdminProducts() {
   const [formError, setFormError] = useState('');
   const [formLoading, setFormLoading] = useState(false);
 
+  // Poza produsului: fișierul ales acum, previzualizarea lui și poza deja salvată
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
+
   // Delete state
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -102,9 +113,49 @@ export default function AdminProducts() {
 
   // ── form helpers ────────────────────────────────────────────────────────
 
+  const resetImage = (savedUrl: string | null) => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setImageFile(null);
+    setPreviewUrl(null);
+    setCurrentImageUrl(savedUrl);
+    setRemoveImage(false);
+  };
+
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // permite alegerea aceluiași fișier din nou
+    if (!file) return;
+
+    if (!IMAGE_TYPES.includes(file.type)) {
+      setFormError('Alege o poză JPG, PNG sau WEBP.');
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      setFormError('Poza poate avea maxim 5 MB.');
+      return;
+    }
+
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setImageFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    setRemoveImage(false);
+    setFormError('');
+  };
+
+  const handleImageRemove = () => {
+    if (imageFile) {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setImageFile(null);
+      setPreviewUrl(null);
+    } else {
+      setRemoveImage(true);
+    }
+  };
+
   const openAdd = () => {
     setEditingId(null);
     setForm(emptyForm());
+    resetImage(null);
     setFormError('');
     setShowForm(true);
   };
@@ -121,6 +172,7 @@ export default function AdminProducts() {
       supplierId: p.supplierId,
       deliveryMethodId: p.deliveryMethodId,
     });
+    resetImage(p.imageUrl);
     setFormError('');
     setShowForm(true);
   };
@@ -128,6 +180,7 @@ export default function AdminProducts() {
   const closeForm = () => {
     setShowForm(false);
     setEditingId(null);
+    resetImage(null);
     setFormError('');
   };
 
@@ -164,19 +217,35 @@ export default function AdminProducts() {
     setFormError('');
     setFormLoading(true);
     try {
-      if (editingId !== null) {
-        await api.put(`/products/${editingId}`, form);
+      let productId = editingId;
+      if (productId !== null) {
+        await api.put(`/products/${productId}`, form);
       } else {
-        await api.post('/products', form);
+        const { data } = await api.post<Product>('/products', form);
+        productId = data.id;
+        // Dacă poza eșuează, o nouă salvare editează produsul creat, nu mai creează altul
+        setEditingId(productId);
       }
+
+      if (imageFile) {
+        const body = new FormData();
+        body.append('file', imageFile);
+        await api.post(`/products/${productId}/image`, body);
+      } else if (removeImage && currentImageUrl) {
+        await api.delete(`/products/${productId}/image`);
+      }
+
       closeForm();
       loadProducts();
     } catch (err) {
       setFormError(extractError(err));
+      loadProducts();
     } finally {
       setFormLoading(false);
     }
   };
+
+  const shownImage = previewUrl ?? (currentImageUrl && !removeImage ? assetUrl(currentImageUrl) : null);
 
   // ── delete ───────────────────────────────────────────────────────────────
 
@@ -244,7 +313,14 @@ export default function AdminProducts() {
                   products.map((p) => (
                     <tr key={p.id}>
                       <td className="table-id">{p.id}</td>
-                      <td className="table-name">{p.name}</td>
+                      <td className="table-name">
+                        <span className="table-product">
+                          <span className="table-thumb">
+                            {p.imageUrl && <img src={assetUrl(p.imageUrl)} alt="" loading="lazy" />}
+                          </span>
+                          {p.name}
+                        </span>
+                      </td>
                       <td>
                         <span className="table-badge">{p.categoryName}</span>
                       </td>
@@ -319,6 +395,39 @@ export default function AdminProducts() {
                       placeholder="ex: Mouse Logitech G502"
                       disabled={formLoading}
                     />
+                  </div>
+                </div>
+
+                <div className="image-field">
+                  <div className="image-field-preview">
+                    {shownImage ? <img src={shownImage} alt="Poza produsului" /> : <span>Fără poză</span>}
+                  </div>
+                  <div className="image-field-body">
+                    <span className="eyebrow">Poză produs</span>
+                    <div className="image-field-actions">
+                      <input
+                        id="form-image"
+                        type="file"
+                        accept={IMAGE_TYPES.join(',')}
+                        className="visually-hidden"
+                        onChange={handleImageChange}
+                        disabled={formLoading}
+                      />
+                      <label htmlFor="form-image" className="btn btn-outline btn-sm">
+                        {shownImage ? 'Schimbă poza' : 'Alege poza'}
+                      </label>
+                      {shownImage && (
+                        <button
+                          type="button"
+                          className="btn-link"
+                          onClick={handleImageRemove}
+                          disabled={formLoading}
+                        >
+                          Scoate poza
+                        </button>
+                      )}
+                    </div>
+                    <p className="image-field-hint">JPG, PNG sau WEBP, maxim 5 MB.</p>
                   </div>
                 </div>
 

@@ -25,6 +25,8 @@ export interface Product {
   specifications: string;
   price: number;
   stock: number;
+  /** Calea pozei pe server, sau null dacă produsul nu are poză */
+  imageUrl: string | null;
   categoryId: number;
   categoryName: string;
   supplierId: number;

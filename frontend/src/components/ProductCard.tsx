@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import type { Product } from '../types';
 import { useShop } from '../context/ShopContext';
 import { getErrorMessage } from '../api/errors';
+import { assetUrl } from '../api/axios';
 import { formatPrice } from '../utils/format';
 import WishlistButton from './WishlistButton';
 import './ProductCard.css';
@@ -41,10 +42,16 @@ export default function ProductCard({ product }: Props) {
       id={`product-card-${product.id}`}
     >
       <div className="product-card-media">
-        {/* Produsele nu au imagini: placeholder tipografic, ca grila să rămână uniformă */}
-        <Link to={productUrl} className="product-card-placeholder" tabIndex={-1} aria-hidden="true">
-          <span>{product.name}</span>
-        </Link>
+        {product.imageUrl ? (
+          <Link to={productUrl} className="product-card-image" tabIndex={-1} aria-hidden="true">
+            <img src={assetUrl(product.imageUrl)} alt="" loading="lazy" />
+          </Link>
+        ) : (
+          /* Fără poză: placeholder tipografic, ca grila să rămână uniformă */
+          <Link to={productUrl} className="product-card-placeholder" tabIndex={-1} aria-hidden="true">
+            <span>{product.name}</span>
+          </Link>
+        )}
         {outOfStock && <span className="product-card-badge">Stoc epuizat</span>}
         <WishlistButton productId={product.id} className="product-card-heart" />
       </div>

@@ -152,6 +152,78 @@
   white-space: nowrap;
 }
 
+/* Miniatura din tabel */
+.table-product {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.table-thumb {
+  flex-shrink: 0;
+  width: 40px;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.table-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Câmpul de poză din formular */
+.image-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.image-field-preview {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 96px;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  text-align: center;
+}
+
+.image-field-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-field-body {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.image-field-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.image-field-actions input:focus-visible + label {
+  outline: 2px solid var(--color-text);
+  outline-offset: 3px;
+}
+
+.image-field-hint {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
 /* Formularul de produs din modal */
 .product-form {
   display: grid;

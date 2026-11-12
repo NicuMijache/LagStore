@@ -36,6 +36,7 @@ namespace LagStore.Api.Controllers
                     Specifications = w.Product.Specifications,
                     Price = w.Product.Price,
                     Stock = w.Product.Stock,
+                    ImageUrl = w.Product.ImageUrl,
                     CategoryId = w.Product.CategoryId,
                     CategoryName = w.Product.Category.Name,
                     SupplierId = w.Product.SupplierId,
