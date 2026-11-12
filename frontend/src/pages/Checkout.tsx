@@ -6,6 +6,8 @@ import type { Cart, CheckoutData, DeliveryMethod, Order } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useShop } from '../context/ShopContext';
 import { formatPrice } from '../utils/format';
+import Icon from '../components/Icon';
+import { SkeletonRows } from '../components/Skeleton';
 import './Shop.css';
 
 const COUNTIES = [
@@ -144,9 +146,9 @@ export default function Checkout() {
   if (loading) {
     return (
       <div className="shop-page">
-        <div className="shop-state">
-          <div className="spinner" />
-          <p>Se pregătește comanda…</p>
+        <div className="shop-container">
+          <p className="eyebrow">Se pregătește comanda…</p>
+          <SkeletonRows />
         </div>
       </div>
     );
@@ -155,9 +157,12 @@ export default function Checkout() {
   if (loadError || !cart) {
     return (
       <div className="shop-page">
-        <div className="shop-state">
-          <p>{loadError || 'Nu am putut încărca datele comenzii.'}</p>
-          <Link to="/cart" className="btn btn-outline">Înapoi la coș</Link>
+        <div className="shop-container">
+          <div className="empty-state" role="alert">
+            <h1 className="empty-state-title">Nu am putut încărca datele comenzii</h1>
+            <p className="empty-state-text">{loadError || 'Încearcă din nou din pagina coșului.'}</p>
+            <Link to="/cart" className="btn">Înapoi la coș</Link>
+          </div>
         </div>
       </div>
     );
@@ -166,10 +171,12 @@ export default function Checkout() {
   if (cart.items.length === 0) {
     return (
       <div className="shop-page">
-        <div className="shop-state">
-          <p className="shop-state-icon">🛒</p>
-          <p>Coșul tău este gol, nu ai ce comanda încă.</p>
-          <Link to="/" className="btn btn-primary">Mergi la catalog</Link>
+        <div className="shop-container">
+          <div className="empty-state">
+            <h1 className="empty-state-title">Coșul tău este gol</h1>
+            <p className="empty-state-text">Nu ai ce comanda încă. Adaugă produse din catalog.</p>
+            <Link to="/" className="btn">Mergi la catalog</Link>
+          </div>
         </div>
       </div>
     );
@@ -183,7 +190,10 @@ export default function Checkout() {
             <h1 className="shop-title">Finalizare comandă</h1>
             <p className="shop-subtitle">Completează datele de livrare și alege metoda de livrare.</p>
           </div>
-          <Link to="/cart" className="btn btn-outline btn-sm">← Înapoi la coș</Link>
+          <Link to="/cart" className="back-link checkout-back">
+            <Icon name="arrowLeft" size={16} />
+            Înapoi la coș
+          </Link>
         </div>
 
         <form onSubmit={handleSubmit} noValidate className="shop-layout">
@@ -287,10 +297,9 @@ export default function Checkout() {
 
             <section className="shop-panel">
               <h2 className="shop-panel-title">Plată</h2>
-              <div className="payment-box">
-                <span>💵</span>
-                <span><strong>Plata la livrare (ramburs).</strong> Plătești curierului când primești coletul.</span>
-              </div>
+              <p className="payment-box">
+                <strong>Plata la livrare (ramburs).</strong> Plătești curierului când primești coletul.
+              </p>
             </section>
           </div>
 
@@ -322,8 +331,7 @@ export default function Checkout() {
               <button
                 id="btn-place-order"
                 type="submit"
-                className="btn btn-primary btn-full"
-                style={{ marginTop: 16 }}
+                className="btn btn-full"
                 disabled={submitting}
               >
                 {submitting ? 'Se plasează comanda…' : 'Plasează comanda'}

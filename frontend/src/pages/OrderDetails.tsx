@@ -6,6 +6,8 @@ import { getErrorMessage } from '../api/errors';
 import type { Order } from '../types';
 import { useAuth } from '../context/AuthContext';
 import OrderStatusBadge from '../components/OrderStatusBadge';
+import Icon from '../components/Icon';
+import { SkeletonRows } from '../components/Skeleton';
 import { formatDate, formatPrice } from '../utils/format';
 import './Shop.css';
 
@@ -42,9 +44,9 @@ export default function OrderDetails() {
   if (loading) {
     return (
       <div className="shop-page">
-        <div className="shop-state">
-          <div className="spinner" />
-          <p>Se încarcă comanda…</p>
+        <div className="shop-container">
+          <p className="eyebrow">Se încarcă comanda…</p>
+          <SkeletonRows />
         </div>
       </div>
     );
@@ -53,9 +55,12 @@ export default function OrderDetails() {
   if (error || !order) {
     return (
       <div className="shop-page">
-        <div className="shop-state">
-          <p>{error || 'Comanda nu a putut fi afișată.'}</p>
-          <Link to="/orders" className="btn btn-outline">Înapoi la comenzi</Link>
+        <div className="shop-container">
+          <div className="empty-state" role="alert">
+            <h1 className="empty-state-title">{error || 'Comanda nu a putut fi afișată.'}</h1>
+            <p className="empty-state-text">Verifică numărul comenzii în istoricul tău.</p>
+            <Link to="/orders" className="btn">Înapoi la comenzi</Link>
+          </div>
         </div>
       </div>
     );
@@ -65,9 +70,9 @@ export default function OrderDetails() {
     <div className="shop-page">
       <div className="shop-container">
         {justPlaced && (
-          <div className="shop-success" role="status">
-            <h2>✓ Comanda a fost plasată cu succes!</h2>
-            <p>
+          <div className="verdict verdict--success shop-success" role="status">
+            <h2 className="verdict-title">Comanda a fost plasată cu succes!</h2>
+            <p className="verdict-text">
               Mulțumim, {order.fullName}! Comanda <strong>#{order.id}</strong> a fost înregistrată.
               Vei plăti {formatPrice(order.total)} la livrare.
             </p>
@@ -117,7 +122,10 @@ export default function OrderDetails() {
             </div>
 
             <div className="shop-actions">
-              <Link to="/orders" className="btn btn-outline">← Toate comenzile mele</Link>
+              <Link to="/orders" className="btn btn-outline">
+                <Icon name="arrowLeft" size={16} />
+                Toate comenzile mele
+              </Link>
               {isAdmin && <Link to="/admin/orders" className="btn btn-outline">Administrare comenzi</Link>}
             </div>
           </div>
@@ -152,7 +160,7 @@ export default function OrderDetails() {
                 <span>Total</span>
                 <span>{formatPrice(order.total)}</span>
               </div>
-              <p className="summary-note">💵 Plata la livrare (ramburs)</p>
+              <p className="summary-note">Plata la livrare (ramburs)</p>
             </div>
           </aside>
         </div>
