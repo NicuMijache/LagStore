@@ -18,6 +18,7 @@ export default function ProductCard({ product }: Props) {
   const [error, setError] = useState('');
 
   const outOfStock = product.stock === 0;
+  const productUrl = `/products/${product.id}`;
 
   const handleAddToCart = async () => {
     setAdding(true);
@@ -35,46 +36,42 @@ export default function ProductCard({ product }: Props) {
   };
 
   return (
-    <div className="product-card" id={`product-card-${product.id}`}>
-      <WishlistButton productId={product.id} className="product-card-heart" />
+    <article
+      className={`product-card ${outOfStock ? 'product-card--sold-out' : ''}`}
+      id={`product-card-${product.id}`}
+    >
+      <div className="product-card-media">
+        {/* Produsele nu au imagini: placeholder tipografic, ca grila să rămână uniformă */}
+        <Link to={productUrl} className="product-card-placeholder" tabIndex={-1} aria-hidden="true">
+          <span>{product.name}</span>
+        </Link>
+        {outOfStock && <span className="product-card-badge">Stoc epuizat</span>}
+        <WishlistButton productId={product.id} className="product-card-heart" />
+      </div>
 
-      <Link to={`/products/${product.id}`} className="product-card-link">
-        <div className="product-card-header">
-          <span className="product-card-category">{product.categoryName}</span>
-          {outOfStock && (
-            <span className="product-card-badge-out">Stoc epuizat</span>
-          )}
-        </div>
-
+      <Link to={productUrl} className="product-card-link">
+        <span className="eyebrow">{product.categoryName}</span>
         <h3 className="product-card-name">{product.name}</h3>
-
         <p className="product-card-description">
           {product.description.length > 100
             ? product.description.slice(0, 100) + '…'
             : product.description || 'Fără descriere'}
         </p>
-
-        <div className="product-card-footer">
-          <span className="product-card-price">{formatPrice(product.price)}</span>
-          <span
-            className={
-              outOfStock ? 'product-card-stock out' : 'product-card-stock'
-            }
-          >
-            {outOfStock ? '✕ Indisponibil' : `✓ ${product.stock} în stoc`}
-          </span>
-        </div>
+        <span className="product-card-stock">
+          {outOfStock ? 'Indisponibil' : `${product.stock} în stoc`}
+        </span>
+        <span className="product-card-price">{formatPrice(product.price)}</span>
       </Link>
 
       <button
-        className="btn btn-primary btn-sm btn-full"
+        className="btn btn-outline btn-sm btn-full"
         onClick={handleAddToCart}
         disabled={outOfStock || adding}
         id={`btn-add-cart-${product.id}`}
       >
-        {outOfStock ? 'Indisponibil' : added ? '✓ Adăugat în coș' : adding ? 'Se adaugă…' : '🛒 Adaugă în coș'}
+        {outOfStock ? 'Indisponibil' : added ? 'Adăugat în coș' : adding ? 'Se adaugă…' : 'Adaugă în coș'}
       </button>
       {error && <p className="product-card-error" role="alert">{error}</p>}
-    </div>
+    </article>
   );
 }

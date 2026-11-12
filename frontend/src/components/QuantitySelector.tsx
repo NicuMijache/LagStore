@@ -1,3 +1,4 @@
+import Icon from './Icon';
 import './QuantitySelector.css';
 
 interface Props {
@@ -18,7 +19,7 @@ export default function QuantitySelector({ value, min, max, onChange, disabled =
         disabled={disabled || value <= min}
         aria-label="Scade cantitatea"
       >
-        −
+        <Icon name="minus" size={16} />
       </button>
       <span className="qty-value" aria-live="polite">{value}</span>
       <button
@@ -28,7 +29,7 @@ export default function QuantitySelector({ value, min, max, onChange, disabled =
         disabled={disabled || value >= max}
         aria-label="Crește cantitatea"
       >
-        +
+        <Icon name="plus" size={16} />
       </button>
     </div>
   );

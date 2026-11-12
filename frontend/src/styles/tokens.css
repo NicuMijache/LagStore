@@ -1,0 +1,70 @@
+/* ═══════════════════════════════════════════════════════
+   Design tokens – „Monochrome Editorial”
+   Singurul loc din proiect cu valori de culoare, mărimi și durate.
+   ═══════════════════════════════════════════════════════ */
+:root {
+  /* Culori */
+  --color-bg: #ffffff;              /* fundalul paginii */
+  --color-surface: #f6f6f4;         /* hover, placeholder imagine, butoane dezactivate */
+  --color-text: #0b0b0b;            /* text principal */
+  --color-text-muted: #8c8c8c;      /* text secundar, etichete, meta */
+  --color-text-body: #4a4a4a;       /* paragrafe lungi */
+  --color-border: #e7e7e5;          /* contururi fine, separatoare */
+  --color-border-strong: #cfcfcc;   /* contur pentru elemente interactive */
+  --color-accent: #0b0b0b;          /* butonul principal */
+  --color-accent-contrast: #ffffff; /* textul de pe butonul principal */
+  --color-danger: #c62828;
+  --color-danger-bg: #fdecec;
+  --color-success: #1b7f3b;         /* doar pentru verdicte critice */
+  --color-warning: #a15c00;         /* doar pentru avertizări critice */
+  --color-shimmer: #ececea;         /* mijlocul animației skeleton */
+
+  /* Suprafețe derivate */
+  --color-header-bg: rgba(255, 255, 255, 0.92);
+  --color-backdrop: rgba(0, 0, 0, 0.35);
+  --shadow-dropdown: 0 12px 32px rgba(0, 0, 0, 0.08);
+  --placeholder-shade: linear-gradient(160deg, transparent 55%, rgba(0, 0, 0, 0.06));
+
+  /* Tipografie */
+  --font-sans: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-display: clamp(2.5rem, 6vw, 4.25rem);
+  --text-detail: clamp(2.25rem, 4.5vw, 3.75rem);
+  --text-figure: 2.5rem;
+  --tracking-display: -0.045em;
+  --tracking-title: -0.02em;
+  --tracking-caps: 0.06em;
+  --tracking-logo: 0.14em;
+
+  /* Spațiere (grilă de 4px) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+
+  /* Forme */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+
+  /* Layout */
+  --page-max: 1440px;
+  --page-gutter: clamp(1rem, 4vw, 6rem);
+  --header-height: 76px;
+
+  /* Mișcare */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --duration: 200ms;
+  --duration-zoom: 600ms;
+}

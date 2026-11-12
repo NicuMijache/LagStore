@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useShop } from '../context/ShopContext';
+import Icon from './Icon';
 import './WishlistButton.css';
 
 interface Props {
@@ -37,7 +38,7 @@ export default function WishlistButton({ productId, className = '', withLabel = 
       aria-label={label}
       title={label}
     >
-      <span className="wishlist-btn-icon">{active ? '♥' : '♡'}</span>
+      <Icon name="heart" size={withLabel ? 18 : 20} filled={active} />
       {withLabel && <span>{active ? 'În favorite' : 'Favorite'}</span>}
     </button>
   );

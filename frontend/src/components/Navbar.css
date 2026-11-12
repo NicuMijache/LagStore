@@ -1,190 +1,277 @@
 .navbar {
   position: sticky;
   top: 0;
-  z-index: 100;
-  background: rgba(10, 10, 18, 0.85);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border-color);
-  padding: 0 24px;
+  z-index: 10;
+  background: var(--color-header-bg);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .navbar-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  height: 64px;
   display: flex;
   align-items: center;
-  gap: 24px;
+  justify-content: space-between;
+  gap: var(--space-8);
+  height: var(--header-height);
 }
 
+/* Logo */
 .navbar-logo {
-  text-decoration: none;
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
   flex-shrink: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+  letter-spacing: var(--tracking-logo);
+  text-transform: uppercase;
 }
 
-.navbar-logo-lag {
-  color: #fff;
-}
-
-.navbar-logo-store {
-  color: var(--accent);
-}
-
+/* Linkuri de navigare */
 .navbar-links {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: var(--space-8);
   flex: 1;
 }
 
 .navbar-link {
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 14px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border: 0;
+  background: none;
+  font-size: var(--text-sm);
   font-weight: 500;
-  padding: 6px 14px;
-  border-radius: 8px;
-  transition: color 0.2s, background 0.2s;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
-.navbar-link:hover {
-  color: var(--text-primary);
-  background: var(--surface-hover);
+.navbar-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration) var(--ease);
 }
 
-.navbar-link-admin {
-  color: var(--accent);
+.navbar-link:hover::after,
+.navbar-link.active::after {
+  transform: scaleX(1);
 }
 
-.navbar-link-admin:hover {
-  color: var(--accent-bright);
-  background: rgba(139, 92, 246, 0.1);
+.navbar-chevron {
+  display: inline-flex;
+  transition: transform var(--duration) var(--ease);
 }
 
-/* Meniul de administrare */
+.navbar-chevron.open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown-uri (administrare, cont) */
 .navbar-dropdown {
   position: relative;
 }
 
-.navbar-dropdown-toggle {
-  background: none;
-  border: none;
-  font-family: var(--font);
-  cursor: pointer;
-}
-
-.navbar-dropdown-toggle.active {
-  background: rgba(139, 92, 246, 0.1);
-}
-
 .navbar-dropdown-menu {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + var(--space-3));
   left: 0;
-  min-width: 210px;
-  display: flex;
-  flex-direction: column;
-  padding: 6px;
-  background: var(--surface);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
-  animation: dropdownIn 0.12s ease;
+  z-index: 11;
+  display: grid;
+  min-width: 240px;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-dropdown);
 }
 
-@keyframes dropdownIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
+.navbar-dropdown-menu--right {
+  left: auto;
+  right: 0;
 }
 
 .navbar-dropdown-item {
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  padding: 9px 12px;
-  border-radius: 8px;
-  transition: color 0.2s, background 0.2s;
+  display: block;
+  width: 100%;
+  padding: var(--space-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-size: var(--text-sm);
+  text-align: left;
+  transition: background var(--duration) var(--ease);
 }
 
 .navbar-dropdown-item:hover,
 .navbar-dropdown-item.active {
-  color: var(--text-primary);
-  background: var(--surface-hover);
+  background: var(--color-surface);
 }
 
-/* Iconițe favorite și coș, cu contor */
-.navbar-icon {
-  position: relative;
-  display: inline-flex;
+.navbar-account {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.navbar-account-name {
+  font-weight: 500;
+}
+
+.navbar-account-email {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.navbar-account-badge {
+  justify-self: start;
+  margin-top: var(--space-1);
+}
+
+/* Acțiuni dreapta */
+.navbar-auth {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 19px;
-  transition: color 0.2s, background 0.2s;
+  gap: var(--space-2);
+  flex-shrink: 0;
 }
 
-.navbar-icon:hover {
-  color: #f472b6;
-  background: var(--surface-hover);
+.navbar-guest {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: var(--space-2);
 }
 
 .navbar-count {
   position: absolute;
   top: 2px;
-  right: 0;
+  right: 2px;
+  display: grid;
+  place-items: center;
   min-width: 18px;
   height: 18px;
-  padding: 0 5px;
-  border-radius: 9px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 18px;
-  text-align: center;
+  padding-inline: var(--space-1);
+  border-radius: var(--radius-pill);
+  background: var(--color-text);
+  color: var(--color-accent-contrast);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1;
 }
 
-.navbar-auth {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
+.navbar-avatar {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-left: var(--space-2);
+  padding: 0;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-bg);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-caps);
+  transition: border-color var(--duration) var(--ease);
 }
 
-.navbar-user {
-  font-size: 14px;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.navbar-avatar:hover,
+.navbar-avatar.open {
+  border-color: var(--color-text);
 }
 
-.navbar-badge {
-  background: linear-gradient(135deg, var(--accent), var(--accent-bright));
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 20px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+/* Hamburger: două linii care devin X */
+.navbar-burger {
+  display: none;
 }
 
-@media (max-width: 640px) {
+.navbar-burger-lines,
+.navbar-burger-lines::after {
+  display: block;
+  width: 18px;
+  height: 1.6px;
+  background: currentColor;
+  transition: transform var(--duration) var(--ease);
+}
+
+.navbar-burger-lines {
+  position: relative;
+  transform: translateY(-3px);
+}
+
+.navbar-burger-lines::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+}
+
+.navbar-burger.open .navbar-burger-lines {
+  transform: translateY(0) rotate(45deg);
+}
+
+.navbar-burger.open .navbar-burger-lines::after {
+  transform: translateY(-6px) rotate(-90deg);
+}
+
+/* Meniul mobil */
+.navbar-mobile {
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.navbar-mobile-inner {
+  display: grid;
+}
+
+.navbar-mobile-inner a,
+.navbar-mobile-inner button {
+  padding-block: var(--space-4);
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  background: none;
+  font-size: var(--text-lg);
+  text-align: left;
+}
+
+.navbar-mobile-inner > :last-child {
+  border-bottom: 0;
+}
+
+@media (max-width: 720px) {
   .navbar-inner {
-    gap: 12px;
+    gap: var(--space-4);
   }
-  .navbar-links {
+
+  .navbar-links,
+  .navbar-guest {
     display: none;
   }
-  .navbar-auth {
-    gap: 8px;
+
+  .navbar-burger {
+    display: inline-grid;
+  }
+
+  .navbar-avatar {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .navbar-logo span {
+    display: none;
   }
 }
